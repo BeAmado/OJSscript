@@ -1,7 +1,7 @@
 <?php
 
-/*
- * Copyright (C) 2018 Bernardo Amado
+/* 
+ * Copyright (C) 2018 bernardo
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,17 +17,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OJSscript\Statements;
-use OJSscript\Core\Registry;
-
-/**
- * Description of StatementRegistry
- *
- * @author bernardo
- */
-class StatementRegistry extends Registry {
+return array(
+    'name' => 'SelectUserRoles',
     
-    private function loadStatement($statementName) {
-        
-    }
-}
+    'query' => 
+        'SELECT * ' .
+        'FROM roles ' .
+        'WHERE journal_id = :SelectUserRoles_journalId AND ' . 
+                 'user_id = :SelectUserRoles_userId',
+    
+    'params' => array(
+        'journal_id' => ':SelectUserRoles_journalId',
+        'user_id' => ':SelectUserRoles_userId'
+    )
+);

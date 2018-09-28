@@ -1,7 +1,7 @@
 <?php
 
-/*
- * Copyright (C) 2018 Bernardo Amado
+/* 
+ * Copyright (C) 2018 bernardo
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,17 +17,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OJSscript\Statements;
-use OJSscript\Core\Registry;
-
-/**
- * Description of StatementRegistry
- *
- * @author bernardo
- */
-class StatementRegistry extends Registry {
+return array(
+    'name' => 'SelectPublishedArticles',
     
-    private function loadStatement($statementName) {
-        
-    }
-}
+    'query' => 
+        'SELECT ' . 
+            'art.*, ' . 
+            'pub_art.* ' .
+        'FROM published_articles AS pub_art ' .
+        'INNER JOIN articles AS art ' . 
+            'ON art.article_id = pub_art.article_id ' .
+        'WHERE art.journal_id = :SelectPublishedArticles_journalId',
+
+    'params' => array('journal_id' => ':SelectPublishedArticles_journalId'),
+);

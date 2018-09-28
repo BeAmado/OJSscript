@@ -41,7 +41,7 @@ class Registry {
         return array_key_exists($key, self::$registry);
     }
     
-    public function &get($key) {
+    public static function &get($key) {
         $value = null;
         if ($this->isRegistered($key)) {
             $value =& self::$registry[$key];
@@ -49,7 +49,7 @@ class Registry {
         return $value;
     }
     
-    public function set($key, &$value) {
+    public static function set($key, &$value) {
         self::$registry[$key] =& $value;
     }
     

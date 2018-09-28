@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (C) 2018 Bernardo Amado
+ * Copyright (C) 2018 bernardo
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,13 +21,16 @@ namespace OJSscript\Statements;
 use OJSscript\Core\Registry;
 
 /**
- * Description of StatementRegistry
+ * Description of StatementFactory
  *
  * @author bernardo
  */
-class StatementRegistry extends Registry {
+class StatementFactory {
     
-    private function loadStatement($statementName) {
-        
+    private static $jsonDir;
+    
+    public static function create($statementName) {
+        $statement = new Statement();
+        $statement->setConnection(Registry::get('connection'));
     }
 }

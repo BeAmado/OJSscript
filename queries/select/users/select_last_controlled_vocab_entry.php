@@ -1,7 +1,7 @@
 <?php
 
-/*
- * Copyright (C) 2018 Bernardo Amado
+/* 
+ * Copyright (C) 2018 bernardo
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,17 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OJSscript\Statements;
-use OJSscript\Core\Registry;
-
-/**
- * Description of StatementRegistry
- *
- * @author bernardo
- */
-class StatementRegistry extends Registry {
+return array(
+    'name' => 'SelectLastControlledVocabEntry',
     
-    private function loadStatement($statementName) {
-        
-    }
-}
+    'query' => 
+        'SELECT * ' .
+        'FROM controlled_vocab_entries ' .
+        'ORDER BY controlled_vocab_entry_id DESC ' .
+        'LIMIT 1',
+
+    'params' => null,
+);

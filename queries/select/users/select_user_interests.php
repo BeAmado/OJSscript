@@ -1,7 +1,7 @@
 <?php
 
-/*
- * Copyright (C) 2018 Bernardo Amado
+/* 
+ * Copyright (C) 2018 bernardo
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,17 +17,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OJSscript\Statements;
-use OJSscript\Core\Registry;
-
-/**
- * Description of StatementRegistry
- *
- * @author bernardo
- */
-class StatementRegistry extends Registry {
+return array(
+    'name' => 'SelectUserInterests',
     
-    private function loadStatement($statementName) {
-        
-    }
-}
+    'query' => 
+        'SELECT ' . 
+            't.setting_value AS interest, ' .
+            'u_int.controlled_vocab_entry_id AS controlled_vocab_entry_id '.
+        'FROM user_interests AS u_int ' .
+        'INNER JOIN controlled_vocab_entry_settings AS t ' .
+            'ON u_int.controlled_vocab_entry_id = ' .
+                   't.controlled_vocab_entry_id ' .
+        'WHERE u_int.user_id = :SelectUserInterests_userId',
+
+    'params' => array('user_id' => ':SelectUserInterests_userId'),
+);
