@@ -25,9 +25,11 @@ use OJSscript\Core\Registry;
  *
  * @author bernardo
  */
-class StatementRegistry extends Registry {
+class StatementRegistry extends Registry 
+{
     
-    private function loadStatement($statementName) {
+    private function loadStatement($statementName) 
+    {
         
     }
 }

@@ -24,7 +24,8 @@ namespace OJSscript\Core;
  *
  * @author bernardo
  */
-class Registry {
+class Registry 
+{
     
     /**
      * The registered data
@@ -37,11 +38,13 @@ class Registry {
      * @param string $key
      * @return boolean
      */
-    public function isRegistered($key) {
+    public function isRegistered($key) 
+    {
         return array_key_exists($key, self::$registry);
     }
     
-    public static function &get($key) {
+    public static function &get($key) 
+    {
         $value = null;
         if ($this->isRegistered($key)) {
             $value =& self::$registry[$key];
@@ -49,7 +52,8 @@ class Registry {
         return $value;
     }
     
-    public static function set($key, &$value) {
+    public static function set($key, &$value) 
+    {
         self::$registry[$key] =& $value;
     }
     

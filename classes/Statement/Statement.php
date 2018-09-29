@@ -17,14 +17,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OJSscript\Statements;
+namespace OJSscript\Statement;
 
 /**
  * The main role of this class is to store the Prepared Statement data
  *
  * @author bernardo
  */
-class Statement {
+class Statement 
+{
     
     /**
      * an alias for the connection used
@@ -61,38 +62,45 @@ class Statement {
      */
     protected $parameters;
     
-    public function getConnection() {
+    public function getConnection(): PDOConnection
+    {
         return $this->connection;
     }
 
-    public function getStmt() {
+    public function getStmt(): PDOStatement
+    {
         return $this->stmt;
     }
 
-    public function getQuery() {
+    public function getQuery()
+    {
         return $this->query;
     }
 
-    public function getParameters() {
+    public function getParameters()
+    {
         return $this->parameters;
     }
 
-    public function setConnection(PDOConnection $connection) {
+    public function setConnection(PDOConnection $connection)
+    {
         $this->connection = $connection;
     }
 
-    public function setStmt(PDOStatement $stmt) {
+    public function setStmt(PDOStatement $stmt)
+    {
         $this->stmt = $stmt;
     }
 
-    public function setQuery($query) {
+    public function setQuery($query)
+    {
         $this->query = $query;
     }
 
-    public function setParameters($parameters) {
+    public function setParameters($parameters)
+    {
         $this->parameters = $parameters;
     }
 
 
-    
 }

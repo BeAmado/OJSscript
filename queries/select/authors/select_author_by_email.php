@@ -18,13 +18,12 @@
  */
 
 return array(
-    'name' => 'SelectLastControlledVocabEntry',
+    'name' => 'SelectAuthorByEmail',
     
     'query' => 
-        'SELECT * ' .
-        'FROM controlled_vocab_entries ' .
-        'ORDER BY controlled_vocab_entry_id DESC ' .
-        'LIMIT 1',
-
-    'params' => null,
+        'SELECT * ' . 
+        'FROM authors ' . 
+        'WHERE email = :SelectAuthorByEmail_email',
+    
+    'params' => array('email' => ':SelectAuthorByEmail_email'),
 );

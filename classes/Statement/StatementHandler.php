@@ -24,6 +24,7 @@ namespace OJSscript\Statements;
  *
  * @author bernardo
  */
-class StatementHandler {
+class StatementHandler 
+{
     //put your code here
 }

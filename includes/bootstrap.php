@@ -20,7 +20,7 @@
 namespace OJSscript;
 
 if (!defined('BASE_DIR')) {
-    define('BASE_DIR', dirname(__FILE__) . '/../');
+    define('BASE_DIR', dirname(__FILE__) . '/..');
 }
 
 //the autoload function
@@ -43,4 +43,41 @@ function myAutoload($className) {
     require_once $fullpath;
 }
 
-$autoloadRegistered = \spl_autoload_register('myAutoload');
+/**
+ * PSR-4 compliant autoloader
+ * Autoload function implementation copied from PSR-4 example
+ * @param string $class The fully-qualified class name.
+ * @return void
+ */
+$autoloadRegistered = \spl_autoload_register(function ($class) {
+    
+    // project-specific namespace prefix
+    $prefix = 'OJSscript';
+
+    // base directory for the namespace prefix
+    $base_dir = BASE_DIR . '/classes/';
+
+    // does the class use the namespace prefix?
+    $len = strlen($prefix);
+    if (strncmp($prefix, $class, $len) !== 0) {
+        // no, move to the next registered autoloader
+        return;
+    }
+
+    // get the relative class name
+    $relative_class = substr($class, $len);
+
+    // replace the namespace prefix with the base directory, replace namespace
+    // separators with directory separators in the relative class name, append
+    // with .php
+    $file = $base_dir . str_replace('\\', '/', $relative_class) . '.php';
+
+    // if the file exists, require it
+    if (file_exists($file)) {
+        require $file;
+    }
+});
+
+if (!$autoloadRegistered) {
+    exit('Could not register the autoloader');
+}

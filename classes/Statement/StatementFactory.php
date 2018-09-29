@@ -1,6 +1,6 @@
 <?php
 
-/* 
+/*
  * Copyright (C) 2018 bernardo
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,14 +17,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-return array(
-    'name' => 'SelectLastControlledVocabEntry',
-    
-    'query' => 
-        'SELECT * ' .
-        'FROM controlled_vocab_entries ' .
-        'ORDER BY controlled_vocab_entry_id DESC ' .
-        'LIMIT 1',
+namespace OJSscript\Statements;
+use OJSscript\Core\Registry;
 
-    'params' => null,
-);
+/**
+ * Description of StatementFactory
+ *
+ * @author bernardo
+ */
+class StatementFactory 
+{
+    
+    private static $jsonDir;
+    
+    public static function create($statementName) 
+    {
+        $statement = new Statement();
+        $statement->setConnection(Registry::get('connection'));
+    }
+}
