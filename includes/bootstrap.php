@@ -1,7 +1,7 @@
 <?php
 
 /* 
- * Copyright (C) 2018 bernardo
+ * Copyright (C) 2018 Bernardo Amado
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,26 +23,6 @@ if (!defined('BASE_DIR')) {
     define('BASE_DIR', dirname(__FILE__) . '/..');
 }
 
-//the autoload function
-function myAutoload($className) {
-    $parts = explode('\\', $className);
-    
-    $lastIndex = count($parts) - 1;
-    $filename = $parts[$lastIndex] . '.php';
-    
-    $path = BASE_DIR . 'classes/';
-    
-    //the first element in the array parts will, or at least should, always be
-    //OJSscript. So add the parts to the path starting in the second one and 
-    //go until before the last one, which would be the filename without .php
-    for ($i = 1; $i < $lastIndex; $i++) {
-        $path .= strtolower($parts[$i]) . '/';
-    }
-    
-    $fullpath = $path . $filename;
-    require_once $fullpath;
-}
-
 /**
  * PSR-4 compliant autoloader
  * Autoload function implementation copied from PSR-4 example
@@ -54,8 +34,9 @@ $autoloadRegistered = \spl_autoload_register(function ($class) {
     // project-specific namespace prefix
     $prefix = 'OJSscript';
 
-    // base directory for the namespace prefix
-    $base_dir = BASE_DIR . '/classes/';
+    // base directories for the namespace prefix
+    $classes_dir = BASE_DIR . '/classes/';
+    $interfaces_dir = BASE_DIR . '/interfaces/';
 
     // does the class use the namespace prefix?
     $len = strlen($prefix);
@@ -70,11 +51,20 @@ $autoloadRegistered = \spl_autoload_register(function ($class) {
     // replace the namespace prefix with the base directory, replace namespace
     // separators with directory separators in the relative class name, append
     // with .php
-    $file = $base_dir . str_replace('\\', '/', $relative_class) . '.php';
+    //first try in the classes directory
+    $file = $classes_dir . str_replace('\\', '/', $relative_class) . '.php';
 
     // if the file exists, require it
     if (file_exists($file)) {
-        require $file;
+        require_once $file;
+    } else {
+        //then try in the interfaces directory
+        $file = $interfaces_dir . str_replace('\\', '/', $relative_class) 
+                . '.php';
+        
+        if (file_exists($file)) {
+            require_once $file;
+        }
     }
 });
 

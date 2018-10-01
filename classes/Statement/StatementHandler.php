@@ -17,14 +17,87 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OJSscript\Statements;
+namespace OJSscript\Statement;
+use OJSscript\Entity\Entity;
 
 /**
  * Description of StatementHandler
  *
- * @author bernardo
+ * @author Bernardo Amado
  */
 class StatementHandler 
 {
-    //put your code here
+    
+    /**
+     * Tests if the data matches the parameters info
+     * @param array $parameters
+     * @param OJSscript\Entity $entity
+     * @return boolean
+     */
+    private static function dataMatches($parameters, Entity $entity) {
+        /* @var $parameter StatementParameter */
+        foreach ($parameters as $parameter) {
+            if (!$entity->hasProperty($parameter->getName())) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+
+
+    //FIXME: this method should probably throw Exception to give information
+    // on what happened
+    /**
+     * 
+     * @param string $statementName
+     * @param Entity $entity
+     * @return boolean
+     */
+    public static function bindParams($statementName, $entity) {
+        if (!is_a($entity, 'Entity')) {
+            return false;
+        }
+        
+        /* @var $statement Statement */
+        $statement =& StatementRegistry::get($statementName);
+        
+        /* @var $parametersInfo array */
+        $parameters = $statement->getParametersList();
+        
+        if (!self::dataMatches($parameters, $entity)) {
+            return false;
+        }
+        
+        /* @var $parameter StatementParameter */
+        foreach ($parameters as $parameter) {
+           
+            $bound = $statement->bindParameter(
+                    $parameter->getPlaceholder(), 
+                    $entity->getProperty($parameter->getName())
+            );
+                    
+            if (!$bound) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Executes the prepared statement
+     * @param string $statementName
+     * @return boolean
+     */
+    public static function execute($statementName) {
+        /* @var $statement Statement */
+        $statement =& StatementRegistry::get($statementName);
+        
+        if ($statement->isPrepared()) {
+            return $statement->execute();
+        }
+        
+        return false;
+    }
 }

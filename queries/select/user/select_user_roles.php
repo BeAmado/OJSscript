@@ -17,8 +17,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OJSscript;
-
-define('BASE_DIR', dirname(__FILE__));
-
-require_once BASE_DIR .  '/includes/bootstrap.php';
+return array(
+    'name' => 'SelectUserRoles',
+    
+    'query' => 
+        'SELECT * '
+      . 'FROM roles '
+      . 'WHERE journal_id = :SelectUserRoles_journalId AND '
+      .          'user_id = :SelectUserRoles_userId',
+    
+    'params' => array(
+        'journal_id' => ':SelectUserRoles_journalId',
+           'user_id' => ':SelectUserRoles_userId',
+    ),
+);

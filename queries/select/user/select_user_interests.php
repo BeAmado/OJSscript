@@ -17,8 +17,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OJSscript;
+return array(
+    'name' => 'SelectUserInterests',
+    
+    'query' => 
+        'SELECT '
+      .     't.setting_value AS interest, '
+      .     'u_int.controlled_vocab_entry_id AS controlled_vocab_entry_id '
+      . 'FROM user_interests AS u_int '
+      . 'INNER JOIN controlled_vocab_entry_settings AS t '
+      .     'ON u_int.controlled_vocab_entry_id = t.controlled_vocab_entry_id '
+      . 'WHERE u_int.user_id = :SelectUserInterests_userId',
 
-define('BASE_DIR', dirname(__FILE__));
-
-require_once BASE_DIR .  '/includes/bootstrap.php';
+    'params' => array('user_id' => ':SelectUserInterests_userId'),
+);

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (C) 2018 bernardo
+ * Copyright (C) 2018 Bernardo Amado
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,25 +18,31 @@
  */
 
 namespace OJSscript\Statement;
-use OJSscript\Core\Registry;
 
 /**
- * Description of StatementRegistry
+ * Locate the file with the prepared statement information
  *
- * @author bernardo
+ * @author Bernardo Amado
  */
-class StatementRegistry extends Registry
+class StatementLocator
 {
-    public static function &get($statementName)
+    /**
+     * Tries to get the location (full absolute path) of the file where the
+     * prepared statement information data are stored
+     * @param string $statementName
+     * @return string
+     */
+    public static function getLocation($statementName) 
     {
-        $statement = null;
-        if (self::isRegistered($statementName)) {
-            $statement =& self::$registry[$statementName];
-        } else {
-            $statement =& StatementFactory::create($statementName);
-            self::set($statementName, $statement);
-        }
+        $path = '';
         
-        return $statement;
+        $matches = array();
+        preg_match_all('/[A-Z][^A-Z]*/', $statementName, $matches);
+        $Words = $matches[0];
+        
+        //the array with the words in lowercase
+        $words = array_map('strtolower', $Words);
+        
+        return $path;
     }
 }

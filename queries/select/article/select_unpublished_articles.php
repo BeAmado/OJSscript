@@ -17,8 +17,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OJSscript;
+return array(
+    'name' => 'SelectUnpublishedArticles',
+    
+    'query' => 
+        'SELECT * '
+      . 'FROM articles '
+      . 'WHERE article_id IN ('
+      .     'SELECT article_id '
+      .     'FROM articles '
+      .     'WHERE article_id NOT IN ('
+      .         'SELECT article_id FROM published_articles'
+      .     ') AND journal_id = :SelectUnpublishedArticles_journalId'
+      . ')',
 
-define('BASE_DIR', dirname(__FILE__));
-
-require_once BASE_DIR .  '/includes/bootstrap.php';
+    'params' => array('journal_id' => ':SelectUnpublishedArticles_journalId'),
+);

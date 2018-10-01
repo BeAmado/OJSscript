@@ -22,7 +22,7 @@ namespace OJSscript\Core;
 /**
  * Standard Registry
  *
- * @author bernardo
+ * @author Bernardo Amado
  */
 class Registry 
 {
@@ -38,7 +38,7 @@ class Registry
      * @param string $key
      * @return boolean
      */
-    public function isRegistered($key) 
+    public static function isRegistered($key) 
     {
         return array_key_exists($key, self::$registry);
     }
@@ -46,7 +46,7 @@ class Registry
     public static function &get($key) 
     {
         $value = null;
-        if ($this->isRegistered($key)) {
+        if (self::isRegistered($key)) {
             $value =& self::$registry[$key];
         }
         return $value;
@@ -55,6 +55,20 @@ class Registry
     public static function set($key, &$value) 
     {
         self::$registry[$key] =& $value;
+    }
+    
+    public static function delete($key)
+    {
+        if (self::isRegistered($key)) {
+            unset(self::$registry[$key]);
+        }
+    }
+    
+    public static function clear()
+    {
+        foreach (array_keys(self::$registry) as $key) {
+            unset(self::$registry[$key]);
+        }
     }
     
 }

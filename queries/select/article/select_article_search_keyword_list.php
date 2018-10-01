@@ -17,8 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OJSscript;
-
-define('BASE_DIR', dirname(__FILE__));
-
-require_once BASE_DIR .  '/includes/bootstrap.php';
+return array(
+    'name' => 'SelectArticleSearchKeywordList',
+    
+    'query' => 
+        'SELECT * '
+      . 'FROM article_search_keyword_list '
+      . 'WHERE keyword_id = :SelectArticleSearchKeywordList_keywordId',
+    
+    'params' => array('keyword_id' => 
+        ':SelectArticleSearchKeywordList_keywordId'),
+);

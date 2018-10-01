@@ -1,7 +1,7 @@
 <?php
 
-/* 
- * Copyright (C) 2018 Bernardo Amado
+/*
+ * Copyright (C) 2018 bernardo
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,11 @@
 
 namespace OJSscript;
 
-define('BASE_DIR', dirname(__FILE__));
-
-require_once BASE_DIR .  '/includes/bootstrap.php';
+/**
+ *
+ * @author bernardo
+ */
+interface Cloneable
+{
+    public function cloneInstance();
+}

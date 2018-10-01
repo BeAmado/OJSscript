@@ -1,7 +1,7 @@
 <?php
 
 /* 
- * Copyright (C) 2018 Bernardo Amado
+ * Copyright (C) 2018 bernardo
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OJSscript;
+return array(
+    'name' => 'SelectSectionTitlesAndAbbrevs',
+    
+    'query' => 
+        'SELECT '
+      .     'section_id, '
+      .     'setting_name, '
+      .     'setting_value, '
+      .     'locale '
+      . 'FROM section_settings '
+      . 'WHERE '
+      .     'section_id = :SelectSectionTitlesAndAbbrevs_sectionId AND '
+      .     'setting_name IN ("title", "abbrev")',
 
-define('BASE_DIR', dirname(__FILE__));
-
-require_once BASE_DIR .  '/includes/bootstrap.php';
+    'params' => array('section_id' => 
+        ':SelectSectionTitlesAndAbbrevs_sectionId'),
+);

@@ -17,8 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OJSscript;
+return array(
+    'name' => 'SelectInterestControlledVocabId',
+    
+    'query' => 
+        'SELECT * '
+      . 'FROM controlled_vocabs '
+      . 'WHERE symbolic = "interest"',
 
-define('BASE_DIR', dirname(__FILE__));
-
-require_once BASE_DIR .  '/includes/bootstrap.php';
+    'params' => null,
+);

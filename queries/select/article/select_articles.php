@@ -17,8 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OJSscript;
+return array(
+    'name' => 'SelectArticles',
+    'query' => 
+        'SELECT '
+      .     'art.*, '
+      .     'pub_art.* '
+      . 'FROM articles AS art '
+      . 'LEFT JOIN published_articles AS pub_art '
+      .     'ON pub_art.article_id = art.article_id '
+      . 'WHERE art.journal_id = :SelectArticles_journalId',
 
-define('BASE_DIR', dirname(__FILE__));
-
-require_once BASE_DIR .  '/includes/bootstrap.php';
+    'params' => array('journal_id' => ':SelectArticles_journalId'),
+);

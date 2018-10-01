@@ -17,8 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OJSscript;
-
-define('BASE_DIR', dirname(__FILE__));
-
-require_once BASE_DIR .  '/includes/bootstrap.php';
+return array(
+    'name' => 'SelectArticleGalleySettings',
+    
+    'query' => 
+        'SELECT * '
+      . 'FROM article_galley_settings '
+      . 'WHERE galley_id = :SelectArticleGalleySettings_galleyId',
+    
+    'params' => array('galley_id' => ':SelectArticleGalleySettings_galleyId'),
+);

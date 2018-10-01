@@ -17,8 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OJSscript;
+/**
+ * This is a link page
+ * it returns an array indicationg the location where the file must be found
+ */
 
-define('BASE_DIR', dirname(__FILE__));
-
-require_once BASE_DIR .  '/includes/bootstrap.php';
+return array('location' => dirname(__FILE__)
+    . '/../user/select_interest_controlled_vocab_id.php');

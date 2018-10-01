@@ -1,7 +1,7 @@
 <?php
 
 /* 
- * Copyright (C) 2018 Bernardo Amado
+ * Copyright (C) 2018 bernardo
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OJSscript;
-
-define('BASE_DIR', dirname(__FILE__));
-
-require_once BASE_DIR .  '/includes/bootstrap.php';
+return array(
+    'name' => 'SelectReviewFormElements',
+    
+    'query' => 
+        'SELECT * '
+      . 'FROM review_form_elements '
+      . 'WHERE review_form_id = :SelectReviewFormElements_reviewFormId',
+    
+    'params' => array('review_form_id' => 
+        ':SelectReviewFormElements_reviewFormId'),
+);
