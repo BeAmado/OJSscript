@@ -18,7 +18,7 @@
  */
 
 namespace OJSscript\Statement;
-use OJSscript\Cloneable;
+use OJSscript\Interfaces\Cloneable;
 
 /**
  * Encapsulates the Prepared Statement parameters

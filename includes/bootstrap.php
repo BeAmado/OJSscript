@@ -23,49 +23,74 @@ if (!defined('BASE_DIR')) {
     define('BASE_DIR', dirname(__FILE__) . '/..');
 }
 
+if (!defined('LINKS_DIR')) {
+    define('LINKS_DIR', dirname(__FILE__) . '/../queries/links');
+}
+
 /**
  * PSR-4 compliant autoloader
  * Autoload function implementation copied from PSR-4 example
  * @param string $class The fully-qualified class name.
  * @return void
  */
-$autoloadRegistered = \spl_autoload_register(function ($class) {
+$autoloadRegistered = \spl_autoload_register(function ($name) {
     
     // project-specific namespace prefix
     $prefix = 'OJSscript';
+    
+    //the type which might be class (the default), interface or test
+    $type = '';
 
     // base directories for the namespace prefix
-    $classes_dir = BASE_DIR . '/classes/';
-    $interfaces_dir = BASE_DIR . '/interfaces/';
-
+    $classesDir = BASE_DIR . '/classes';
+    $testsDir = BASE_DIR . '/tests';
+    $interfacesDir = BASE_DIR . '/interfaces';
+    
+    $fields = explode('\\', $name);
+    
     // does the class use the namespace prefix?
-    $len = strlen($prefix);
-    if (strncmp($prefix, $class, $len) !== 0) {
+    if (strcmp($fields[0], $prefix) !== 0) {
         // no, move to the next registered autoloader
         return;
     }
+    
+    /* @var $fileBaseName string */
+    $fileBaseName = '';
+    
+    switch (strtolower($fields[1])) {
+        case 'tests':
+            $type = 'test';
+            $fileBaseName .= $testsDir;
+            array_splice($fields, 0, 2);
+            break;
+        
+        case 'interfaces':
+            $type = 'interface';
+            $fileBaseName .= $interfacesDir;
+            array_splice($fields, 0, 2);
+            break;
+        
+        default:
+            $type = 'class';
+            $fileBaseName .= $classesDir;
+            array_splice($fields, 0, 1);
+    }
 
-    // get the relative class name
-    $relative_class = substr($class, $len);
+    // get the remaining name
+    /* @var $fileRemainigName string */
+    $fileRemainingName = implode('/', $fields);
 
     // replace the namespace prefix with the base directory, replace namespace
     // separators with directory separators in the relative class name, append
     // with .php
     //first try in the classes directory
-    $file = $classes_dir . str_replace('\\', '/', $relative_class) . '.php';
+    $file = $fileBaseName . '/' . $fileRemainingName . '.php';
 
     // if the file exists, require it
-    if (file_exists($file)) {
-        require_once $file;
-    } else {
-        //then try in the interfaces directory
-        $file = $interfaces_dir . str_replace('\\', '/', $relative_class) 
-                . '.php';
-        
-        if (file_exists($file)) {
-            require_once $file;
-        }
-    }
+//    if (file_exists($file)) {
+//        require_once $file;
+//    }
+    require_once $file;
 });
 
 if (!$autoloadRegistered) {

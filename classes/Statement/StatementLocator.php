@@ -18,6 +18,8 @@
  */
 
 namespace OJSscript\Statement;
+use OJSscript\BASE_DIR;
+use OJSscript\LINKS_DIR;
 
 /**
  * Locate the file with the prepared statement information
@@ -26,6 +28,32 @@ namespace OJSscript\Statement;
  */
 class StatementLocator
 {
+    
+    private static function formStatementFilename($statementName)
+    {
+        $matches = array();
+        preg_match_all('/[A-Z][^A-Z]*/', $statementName, $matches);
+        $Words = $matches[0];
+        
+        //the array with the words in lowercase
+        $words = array_map('strtolower', $Words);
+        
+        return implode('_', $words);
+    }
+    
+    private static function getLink($statementName)
+    {
+       
+        $filename = self::formStatementFilename($statementName) . "_LINK.php";
+        $link = '';
+        
+        if (is_file(LINKS_DIR . '/' . $filename)) {
+            $link = LINKS_DIR . '/' . $filename;
+        }
+        
+        return $link;
+    }
+    
     /**
      * Tries to get the location (full absolute path) of the file where the
      * prepared statement information data are stored
@@ -36,12 +64,37 @@ class StatementLocator
     {
         $path = '';
         
-        $matches = array();
-        preg_match_all('/[A-Z][^A-Z]*/', $statementName, $matches);
-        $Words = $matches[0];
+        $filename = self::formStatementFilename($statementName);
         
-        //the array with the words in lowercase
-        $words = array_map('strtolower', $Words);
+        /* @var $words array */
+        $words = explode('_', $filename);
+        
+        /* @var $operationDir string */
+        $operationDir = '';
+        
+        switch ($words[0]) {
+            case 'select':
+            case 'insert':
+            case 'update':
+                $operationDir = $words[0];
+                break;
+            
+            default :
+                return self::getLink($statementName);
+        }
+        
+        /* @var $entityDir string */
+        $entityDir = $words[1];
+        
+        $fullpath = BASE_DIR . '/queries/' . $operationDir . '/' . $entityDir
+                . $filename . '.php';
+        
+        if (is_file($fullpath)) {
+            $path = $fullpath;
+        }
+        else {
+            $path = self::getLink($statementName);
+        }
         
         return $path;
     }

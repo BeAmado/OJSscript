@@ -59,13 +59,13 @@ class StatementFactory
      * Statement could not add any of the parameters.
      * @param \OJSscript\Statement\Statement $statement
      * @param array $statementInfo
-     * @throws Exception
+     * @throws \Exception
      * @return void
      */
     private static function addStatementParameters(&$statement, $statementInfo) 
     {
         if (!self::isValidStatementInfo($statementInfo)) {
-            throw new Exception('Invalid structure for the prepared statement '
+            throw new \Exception('Invalid structure for the prepared statement '
                     . 'information.');
         }
         
@@ -75,7 +75,7 @@ class StatementFactory
             if (!$statement->addParameter($parameter)) {
                 $message = 'Could not add the parameter "' 
                         . $parameter->getName() . '".';
-                throw new Exception($message);
+                throw new \Exception($message);
             }
         }
     }
@@ -84,7 +84,7 @@ class StatementFactory
      * Tries to get the statement information
      * @param string $statementName
      * @return array
-     * @throws Exception
+     * @throws \Exception
      */
     private static function getStatementInfo($statementName)
     {
@@ -94,12 +94,12 @@ class StatementFactory
         if ($filename === '') {
             $errorMessage .= 'Could not locate the file where the statement'
                     . ' information are.';
-            throw new Exception($errorMessage);
+            throw new \Exception($errorMessage);
         }
         
         if (!is_file($filename)) {
             $errorMessage = 'The filename "' . $filename . '" is not a file.';
-            throw new Exception($errorMessage);
+            throw new \Exception($errorMessage);
         }
         
         $statementInfo = include $filename;
@@ -107,7 +107,7 @@ class StatementFactory
             $errorMessage .= 'The name in the statement information "'
                     . $statementInfo['name'] . '" does not match with the '
                     . 'one provided "' . $statementName . '".';
-            throw new Exception($errorMessage);
+            throw new \Exception($errorMessage);
         }
         
         return $statementInfo;
@@ -125,16 +125,16 @@ class StatementFactory
     {
         try {
             $statement = new Statement();
-            $statementInfo = self::getStatementInfo($statementName);
-            self::addStatementParameters($statement, $statementInfo);
-            
-            $statement->setQuery($statementInfo['query']);
-            $statement->setConnection(Registry::get('connection'));
-            
-            $statement->prepareItself();
+//            $statementInfo = self::getStatementInfo($statementName);
+//            self::addStatementParameters($statement, $statementInfo);
+//            
+//            $statement->setQuery($statementInfo['query']);
+//            $statement->setConnection(Registry::get('connection'));
+//            
+//            $statement->prepareItself();
         
             return $statement;
-        } catch (Exception $exc) {
+        } catch (\Exception $exc) {
             echo $exc->getTraceAsString();
         }
     }
