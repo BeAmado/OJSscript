@@ -34,7 +34,8 @@ class StatementHandler
      * @param OJSscript\Entity $entity
      * @return boolean
      */
-    private static function dataMatches($parameters, Entity $entity) {
+    private static function dataMatches($parameters, Entity $entity) 
+    {
         /* @var $parameter StatementParameter */
         foreach ($parameters as $parameter) {
             if (!$entity->hasProperty($parameter->getName())) {
@@ -54,7 +55,8 @@ class StatementHandler
      * @param Entity $entity
      * @return boolean
      */
-    public static function bindParams($statementName, $entity) {
+    public static function bindParams($statementName, $entity)
+    {
         if (!is_a($entity, 'Entity')) {
             return false;
         }
@@ -73,8 +75,8 @@ class StatementHandler
         foreach ($parameters as $parameter) {
            
             $bound = $statement->bindParameter(
-                    $parameter->getPlaceholder(), 
-                    $entity->getProperty($parameter->getName())
+                $parameter->getPlaceholder(), 
+                $entity->getProperty($parameter->getName())
             );
                     
             if (!$bound) {
@@ -90,7 +92,8 @@ class StatementHandler
      * @param string $statementName
      * @return boolean
      */
-    public static function execute($statementName) {
+    public static function execute($statementName)
+    {
         /* @var $statement Statement */
         $statement =& StatementRegistry::get($statementName);
         

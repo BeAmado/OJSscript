@@ -28,7 +28,15 @@ use OJSscript\LINKS_DIR;
  */
 class StatementLocator
 {
-    
+    /**
+     * Form the base name of the file where the statement information might be 
+     * found. For example:
+     * formStatementFilename('SelectArticleFiles') will return the string
+     * 'select_article_files'.
+     * 
+     * @param string $statementName
+     * @return string
+     */
     private static function formStatementFilename($statementName)
     {
         $matches = array();
@@ -41,6 +49,16 @@ class StatementLocator
         return implode('_', $words);
     }
     
+    /**
+     * Gets the full path name of the file where the location of the file 
+     * containing the statement information might be found. For example:
+     * getLink('SelectEditDecisions') must return 
+     * 'path/to/links/select_edit_decisions_LINK.php'
+     * If the link is not found, en empty string is returned.
+     * 
+     * @param string $statementName
+     * @return string
+     */
     private static function getLink($statementName)
     {
        
@@ -63,6 +81,10 @@ class StatementLocator
     public static function getLocation($statementName) 
     {
         $path = '';
+        $pathFound = false;
+        
+        $link = '';
+        $linkFound = false;
         
         $filename = self::formStatementFilename($statementName);
         
@@ -80,20 +102,37 @@ class StatementLocator
                 break;
             
             default :
-                return self::getLink($statementName);
+                //do nothing
+                break;
         }
         
         /* @var $entityDir string */
         $entityDir = $words[1];
         
         $fullpath = BASE_DIR . '/queries/' . $operationDir . '/' . $entityDir
-                . $filename . '.php';
+            . $filename . '.php';
         
         if (is_file($fullpath)) {
             $path = $fullpath;
+            $pathFound = true;
         }
         else {
-            $path = self::getLink($statementName);
+            $link = self::getLink($statementName);
+            if ($link !== '') {
+                $linkFound = true;
+            }
+        }
+        
+        if (!$pathFound && $linkFound) {
+            /* @var $arrLocation array */
+            $arrLocation = include $link;
+            
+            if (
+                array_key_exists('location', $arrLocation) && 
+                is_file($arrLocation['location'])
+            ) {
+                $path = $arrLocation['location'];
+            }
         }
         
         return $path;

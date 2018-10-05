@@ -80,17 +80,13 @@ $autoloadRegistered = \spl_autoload_register(function ($name) {
     /* @var $fileRemainigName string */
     $fileRemainingName = implode('/', $fields);
 
-    // replace the namespace prefix with the base directory, replace namespace
-    // separators with directory separators in the relative class name, append
-    // with .php
-    //first try in the classes directory
+    // form the filename with absolute path
     $file = $fileBaseName . '/' . $fileRemainingName . '.php';
 
     // if the file exists, require it
-//    if (file_exists($file)) {
-//        require_once $file;
-//    }
-    require_once $file;
+    if (file_exists($file)) {
+        require_once $file;
+    }
 });
 
 if (!$autoloadRegistered) {

@@ -19,7 +19,7 @@
 
 /**
  * This is a link page
- * it returns an array indicationg the location where the file must be found
+ * it returns an array indicating the location where the file must be found
  */
 
 return array('location' => dirname(__FILE__)

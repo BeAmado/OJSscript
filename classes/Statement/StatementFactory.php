@@ -93,7 +93,7 @@ class StatementFactory
         $filename = StatementLocator::getLocation($statementName);
         if ($filename === '') {
             $errorMessage .= 'Could not locate the file where the statement'
-                    . ' information are.';
+                    . ' informations are.';
             throw new \Exception($errorMessage);
         }
         

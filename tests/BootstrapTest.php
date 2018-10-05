@@ -1,7 +1,7 @@
 <?php
 
-/* 
- * Copyright (C) 2018 Bernardo Amado
+/*
+ * Copyright (C) 2018 bernardo
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,10 +17,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * This is a link page
- * it returns an array indicating the location where the file must be found
- */
+namespace OJSscript\Tests;
+require_once '../includes/bootstrap.php';
 
-return array('location' => dirname(__FILE__)
-    . '/../article/select_published_articles.php');
+/**
+ * Description of BootstrapTest
+ *
+ * @author bernardo
+ */
+class BootstrapTest extends \PHPUnit\Framework\TestCase
+{
+    public function testConstants()
+    {
+        //test if BASE_DIR is a directory
+        $this->assertTrue(is_dir(BASE_DIR));
+        
+        //test if LINKS_DIR is a directory
+        $this->assertTrue(is_dir(LINKS_DIR));
+    }
+}
