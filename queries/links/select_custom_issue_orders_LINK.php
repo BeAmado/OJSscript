@@ -1,7 +1,7 @@
 <?php
 
 /* 
- * Copyright (C) 2018 Bernardo Amado
+ * Copyright (C) 2018 bernardo
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,4 +23,4 @@
  */
 
 return array('location' => dirname(__FILE__)
-    . '/../select/article/select_published_article_by_setting.php');
+    . '/../select/issue/select_custom_issue_orders.php');

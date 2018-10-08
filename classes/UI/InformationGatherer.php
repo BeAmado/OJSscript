@@ -17,32 +17,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OJSscript\Statement;
-use OJSscript\Core\Registry;
+namespace OJSscript\UI;
 
 /**
- * Description of StatementRegistry
+ * Description of InformationGatherer
  *
  * @author bernardo
  */
-class StatementRegistry extends Registry
+class InformationGatherer
 {
-    /**
-     * Gets the specified statement. Creates the statement if it was 
-     * not registered.
-     * @param string $statementName
-     * @return \OJSscript\Statement\Statement
-     */
-    public static function &get($statementName)
+    
+    protected $inquirer;
+    
+    public function __construct()
     {
-        $statement = null;
-        if (self::isRegistered($statementName)) {
-            $statement =& self::$registry[$statementName];
-        } else {
-            $statement =& StatementFactory::create($statementName);
-            self::set($statementName, $statement);
+        $this->inquirer = new Inquirer();
+    }
+    
+    /**
+     * Gathers information on the database parameters needed to stablish a 
+     * connection.
+     * @param array $args
+     * @return array
+     */
+    public function gatherDatabaseInfo(
+        $args = array('host', 'user', 'password', 'name')
+    ) {
+        $returnData = array();
+        
+        foreach ($args as $item) {
+            $question = 'Enter the database ' . $item . ' : ';
+            $returnData[$item] = $this->inquirer->inquire($question);
         }
         
-        return $statement;
+        return $returnData;
     }
 }

@@ -23,4 +23,4 @@
  */
 
 return array('location' => dirname(__FILE__)
-    . '/../article/select_unpublished_articles.php');
+    . '/../select/article/select_unpublished_articles.php');

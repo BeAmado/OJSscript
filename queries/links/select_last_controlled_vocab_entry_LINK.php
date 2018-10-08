@@ -23,4 +23,4 @@
  */
 
 return array('location' => dirname(__FILE__)
-    . '/../user/select_last_controlled_vocab_entry.php');
+    . '/../select/user/select_last_controlled_vocab_entry.php');

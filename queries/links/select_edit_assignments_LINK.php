@@ -23,4 +23,4 @@
  */
 
 return array('location' => dirname(__FILE__)
-    . '/../edit/select_edit_assignments.php');
+    . '/../select/edit/select_edit_assignments.php');

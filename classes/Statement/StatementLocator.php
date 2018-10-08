@@ -73,19 +73,12 @@ class StatementLocator
     }
     
     /**
-     * Tries to get the location (full absolute path) of the file where the
-     * prepared statement information data are stored
+     * Forms the absolute path of the file, based on the given statement name.
      * @param string $statementName
      * @return string
      */
-    public static function getLocation($statementName) 
+    private static function formFullPath($statementName)
     {
-        $path = '';
-        $pathFound = false;
-        
-        $link = '';
-        $linkFound = false;
-        
         $filename = self::formStatementFilename($statementName);
         
         /* @var $words array */
@@ -109,30 +102,59 @@ class StatementLocator
         /* @var $entityDir string */
         $entityDir = $words[1];
         
+        //put the entityDir in singular
+        if (substr($entityDir, -1) === 's') {
+            $entityDir = substr($entityDir, 0, -1);
+        }
+        
         $fullpath = BASE_DIR . '/queries/' . $operationDir . '/' . $entityDir
             . $filename . '.php';
         
-        if (is_file($fullpath)) {
-            $path = $fullpath;
-            $pathFound = true;
-        }
-        else {
-            $link = self::getLink($statementName);
-            if ($link !== '') {
-                $linkFound = true;
-            }
+        return $fullpath;
+    }
+    
+    /**
+     * Gets the statement location using the statement link file.
+     * @param string $statementName
+     * @return string
+     */
+    private static function getLocationByLink($statementName)
+    {
+        /* @var $path string */
+        $path = '';
+        
+        /* @var $link string */
+        $link = self::getLink($statementName);
+        
+        /* @var $arrLocation array */
+        $arrLocation = include $link;
+
+        if (
+            array_key_exists('location', $arrLocation) && 
+            is_file($arrLocation['location'])
+        ) {
+            $path = $arrLocation['location'];
         }
         
-        if (!$pathFound && $linkFound) {
-            /* @var $arrLocation array */
-            $arrLocation = include $link;
-            
-            if (
-                array_key_exists('location', $arrLocation) && 
-                is_file($arrLocation['location'])
-            ) {
-                $path = $arrLocation['location'];
-            }
+        return $path;
+    }
+    
+    /**
+     * Tries to get the location (full absolute path) of the file where the
+     * prepared statement information data are stored
+     * @param string $statementName
+     * @return string
+     */
+    public static function getLocation($statementName) 
+    {
+        $path = '';
+        
+        $fullpath = self::formFullPath($statementName);
+        
+        if (is_file($fullpath)) {
+            $path = $fullpath;
+        } else {
+            $path = self::getLocationByLink($statementName);
         }
         
         return $path;

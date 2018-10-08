@@ -574,7 +574,7 @@ return array (
     'query' => 
         'SELECT * ' . 
         'FROM event_log ' . 
-        'WHERE assoc_id = :SelectEventLogs_articleId',
+        'WHERE assoc_id = :SelectEventLogs_assocId',
     
     'params' => array('assoc_id' => ':SelectEventLogs_assocId'),
 ),

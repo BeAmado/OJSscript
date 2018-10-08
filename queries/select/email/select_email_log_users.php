@@ -1,7 +1,7 @@
 <?php
 
 /* 
- * Copyright (C) 2018 Bernardo Amado
+ * Copyright (C) 2018 bernardo
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,10 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * This is a link page
- * it returns an array indicating the location where the file must be found
- */
-
-return array('location' => dirname(__FILE__)
-    . '/../select/article/select_published_article_by_setting.php');
+return array(
+    'name' => 'SelectEmailLogUsers',
+    
+    'query' => 
+        'SELECT * '
+      . 'FROM email_log_users '
+      . 'WHERE email_log_id = :SelectEmailLogUsers_emailLogId',
+    
+    'params' => array('email_log_id' => ':SelectEmailLogUsers_emailLogId'),
+);

@@ -19,6 +19,7 @@
 
 namespace OJSscript\Statement;
 use OJSscript\Core\Registry;
+use OJSscript\Database\DatabaseConnectionFactory;
 
 /**
  * Description of StatementFactory
@@ -119,22 +120,30 @@ class StatementFactory
      * and configurate it. If any of the steps in the configuration process
      * fails, it returns false. Otherwise it returns the instance created.
      * @param string $statementName
-     * @return boolean|\OJSscript\Statement\Statement
+     * @return \OJSscript\Statement\Statement
      */
-    public static function create($statementName) 
+    public static function &create($statementName) 
     {
         try {
-            $statement = new Statement();
-//            $statementInfo = self::getStatementInfo($statementName);
-//            self::addStatementParameters($statement, $statementInfo);
-//            
-//            $statement->setQuery($statementInfo['query']);
-//            $statement->setConnection(Registry::get('connection'));
-//            
-//            $statement->prepareItself();
+            $statement =& new Statement();
+            $statementInfo = self::getStatementInfo($statementName);
+            self::addStatementParameters($statement, $statementInfo);
+            
+            $statement->setQuery($statementInfo['query']);
+            
+            if (!Registry::isRegistered('dbConnection')) {
+                Registry::set(
+                    'dbConnection', 
+                    DatabaseConnectionFactory::create()
+                );
+            }
+            $statement->setConnection(Registry::get('dbConnection'));
+            
+            $statement->prepareItself();
         
             return $statement;
         } catch (\Exception $exc) {
+            //TREAT BETTER
             echo $exc->getTraceAsString();
         }
     }

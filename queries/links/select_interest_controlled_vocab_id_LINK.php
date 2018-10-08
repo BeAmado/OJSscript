@@ -23,4 +23,4 @@
  */
 
 return array('location' => dirname(__FILE__)
-    . '/../user/select_interest_controlled_vocab_id.php');
+    . '/../select/user/select_interest_controlled_vocab_id.php');
