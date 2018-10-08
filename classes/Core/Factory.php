@@ -26,5 +26,5 @@ namespace OJSscript\Core;
  */
 abstract class Factory
 {
-    public static abstract function &create($args = null);
+    public static abstract function create($args = array());
 }

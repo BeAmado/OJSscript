@@ -33,16 +33,27 @@ class DatabaseConnectionFactory extends Factory
      * associative array.
      * @return array
      */
-    protected static function prepareDatabaseInformation()
+    protected static function prepareDatabaseInformation($args = array())
     {
         $infoGatherer = new InformationGatherer();
         
         /* @var $dbInfo array */
-        $dbInfo = $infoGatherer->gatherDatabaseInfo();
+        $dbInfo = null;
+        
+        if (!empty($args)) {
+            $dbInfo = $infoGatherer->gatherDatabaseInfo($args);
+        } else {
+            $dbInfo = $infoGatherer->gatherDatabaseInfo();
+        }
         
         //MySQL will be the default database driver
         if (!array_key_exists('driver', $dbInfo)) {
             $dbInfo['driver'] = 'MySQL';
+        }
+        
+        //utf8 will be the default charset
+        if (!array_key_exists('charset', $dbInfo)) {
+            $dbInfo['charset'] = 'utf8';
         }
         
         return $dbInfo;
@@ -52,18 +63,19 @@ class DatabaseConnectionFactory extends Factory
      * Creates a new DatabaseConnection with the default driver as MySQL.
      * @return \OJSscript\Database\DatabaseConnection
      */
-    public static function &create()
+    public static function create($args = array())
     {
         /* @var $dbInfo array */
-        $dbInfo = self::prepareDatabaseInformation();
+        $dbInfo = self::prepareDatabaseInformation($args);
         
         /* @var $connection \OJSscript\Database\DatabaseConnection */
-        $connection =& new DatabaseConnection(
+        $connection = new DatabaseConnection(
             $dbInfo['driver'],
             $dbInfo['host'],
             $dbInfo['user'],
             $dbInfo['password'],
-            $dbInfo['name']
+            $dbInfo['name'],
+            $dbInfo['charset']
         );
         
         $connection->connect();

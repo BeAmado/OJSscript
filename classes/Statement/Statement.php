@@ -18,6 +18,7 @@
  */
 
 namespace OJSscript\Statement;
+use OJSscript\Database\DatabaseConnection;
 
 /**
  * The main role of this class is to store the Prepared Statement data
@@ -29,7 +30,7 @@ class Statement
     
     /**
      * an alias for the connection used
-     * @var PDOConnection
+     * @var DatabaseConnection
      */
     protected $connection;
     
@@ -108,12 +109,12 @@ class Statement
 
     /**
      * Sets the Statement connection
-     * @param \PDOConnection $connection
+     * @param DatabaseConnection $connection
      * @return boolean
      */
     public function setConnection($connection)
     {
-        if (is_a($connection, 'PDOConnection')) {
+        if (is_a($connection, '\OJSscript\Database\DatabaseConnection')) {
             $this->connection = $connection;
             return true;
         }
@@ -149,7 +150,7 @@ class Statement
          * StatementParameter inside the method. Would be better to type hint
          * but in PHP 5 would generate a Fatal Error. 
          */
-        if (!is_a($parameter, 'StatementParameter')) {
+        if (!is_a($parameter, '\OJSscript\Statement\StatementParameter')) {
             /*
              * FIXME: Would be better to throw an exception
              */

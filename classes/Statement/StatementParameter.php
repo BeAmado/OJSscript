@@ -115,10 +115,10 @@ class StatementParameter implements Cloneable
     public function cloneInstance()
     {
         return new StatementParameter(
-                $this->getName(), 
-                $this->getPlaceholder(), 
-                $this->getValue(),
-                $this->getType()
+            $this->getName(), 
+            $this->getPlaceholder(), 
+            $this->getValue(),
+            $this->getType()
         );
     }
     

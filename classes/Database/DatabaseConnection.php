@@ -61,14 +61,14 @@ class DatabaseConnection
     protected $name;
     
     /**
-     * The database charset
+     * The database character set
      * @var string
      */
     protected $charset;
     
     /**
      * The actual PDO connection
-     * @var \PDOConnection
+     * @var \PDO
      */
     protected $connection;
     
@@ -77,13 +77,15 @@ class DatabaseConnection
         $dbHost = null,
         $dbUser = null,
         $dbPassword = null,
-        $dbName = null
+        $dbName = null,
+        $dbCharset = null
     ) {
         $this->setDatabaseDriver($dbDriver);
         $this->setHost($dbHost);
         $this->setUser($dbUser);
         $this->setPassword($dbPassword);
         $this->setName($dbName);
+        $this->setCharset($dbCharset);
     }
     
     public function getDatabaseDriver()
@@ -118,17 +120,16 @@ class DatabaseConnection
     
     /**
      * Gets the actual database connection.
-     * @return \PDOConnection
+     * @return \PDO
      */
-    public function &getConnection(): \PDOConnection
+    public function getConnection()
     {
-        $conn =& $this->connection;
-        return $conn;
+        return $this->connection;
     }
 
 
     /**
-     * Sets the databse driver. Returns true on success and false otherwise.
+     * Sets the database driver. Returns true on success and false otherwise.
      * @param string $databaseDriver
      * @return boolean
      */
@@ -206,7 +207,8 @@ class DatabaseConnection
     }
     
     /**
-     * Sets the database charset returning true on success and false otherwise.
+     * Sets the database character set, returning true on success and 
+     * false otherwise.
      * @param string $charset
      * @return boolean
      */
@@ -220,16 +222,24 @@ class DatabaseConnection
         }
     }
     
-    protected function setConnection(&$connection)
+    /**
+     * Sets the actual PDO connection
+     * @param \PDO $connection
+     * @return boolean
+     */
+    protected function setConnection($connection)
     {
-        if (is_a($connection, '\PDOConnection')) {
-            $this->connection =& $connection;
+        if (is_a($connection, '\PDO')) {
+            $this->connection = $connection;
             return true;
         }
         return false;
     }
 
-    
+    /**
+     * Creates the Data Source Name in order to create a PDO object.
+     * @return string
+     */
     protected function createDSN()
     {
         $dsn = null;
@@ -237,14 +247,14 @@ class DatabaseConnection
         switch ($this->getDatabaseDriver()) {
             case 'MySQL':
                 $dsn = 'mysql:'
-                     . 'host=' . $this->getHost() . ';'
-                     . 'dbname=' . $this->getName();
+                     . 'dbname=' . $this->getName() . ';'
+                     . 'host=' . $this->getHost();
                 break;
 
             case 'PostgreSQL':
                 $dsn = 'pgsql:'
-                     . 'host=' . $this->getHost() . ';'
-                     . 'dbname=' . $this->getName();
+                     . 'dbname=' . $this->getName() . ';'
+                     . 'host=' . $this->getHost();
                 break;
         }
         
@@ -262,27 +272,40 @@ class DatabaseConnection
     
     /**
      * Creates the \PDOConnection if it was not already connected.
-     * @return void
+     * @return boolean
      */
     public function connect()
     {
         if ($this->isConnected()) {
-            return;
+            return true;
         }
         
         $options = array(
-            PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES '
+            \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES '
                                             . $this->getCharset(),
         );
         
-        $conn = new PDO(
+        $conn = new \PDO(
             $this->createDSN(), 
             $this->getUser(),
             $this->getPassword(),
             $options
         );
         
-        $this->setConnection($conn);
+        return $this->setConnection($conn);
+    }
+    
+    /**
+     * Wrapper method to create a prepared statement using the PDO::prepare
+     * @param string $query
+     * @return \PDOStatement
+     */
+    public function prepare($query)
+    {
+        /* @var $conn \PDO */
+        $conn = $this->getConnection();
+        
+        return $conn->prepare($query);
     }
     
     /**
@@ -291,8 +314,8 @@ class DatabaseConnection
      */
     public function beginTransaction()
     {
-        /* @var $conn \PDOConnection */
-        $conn =& $this->getConnection();
+        /* @var $conn \PDO */
+        $conn = $this->getConnection();
         if (!$conn->inTransaction()) {
             $conn->beginTransaction();
         }
@@ -304,21 +327,21 @@ class DatabaseConnection
      */
     public function rollback()
     {
-        /* @var $conn \PDOConnection */
-        $conn =& $this->getConnection();
+        /* @var $conn \PDO */
+        $conn = $this->getConnection();
         if ($conn->inTransaction()) {
             $conn->rollBack();
         }
     }
     
     /**
-     * Commmits the changes if a transaction is in course.
+     * Commits the changes if a transaction is in course.
      * @return void
      */
     public function commit()
     {
-        /* @var $conn \PDOConnection */
-        $conn =& $this->getConnection();
+        /* @var $conn \PDO */
+        $conn = $this->getConnection();
         if ($this->inTransaction()) {
             $conn->commit();
         }

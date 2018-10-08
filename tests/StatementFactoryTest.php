@@ -20,7 +20,9 @@
 namespace OJSscript\Tests;
 use OJSscript\Statement\StatementFactory;
 use OJSscript\Statement\StatementLocator;
-
+use OJSscript\Core\Registry;
+use OJSscript\Statement\Statement;
+use OJSscript\Database\DatabaseConnectionFactory;
 require_once '../includes/bootstrap.php';
 
 /**
@@ -30,22 +32,44 @@ require_once '../includes/bootstrap.php';
  */
 class StatementFactoryTest extends \PHPUnit\Framework\TestCase
 {
-    public function __construct($name = null, array $data = array(), $dataName = '')
-    {
+    public function __construct(
+        $name = null,
+        array $data = array(),
+        $dataName = ''
+    ) {
         parent::__construct($name, $data, $dataName);
         
+        $runningTest = true;
+        if (!Registry::isRegistered('RUNNING_TEST')) {
+            Registry::set('RUNNING_TEST', $runningTest);
+        }
+        
+        $databaseInformation = array(
+                'host' => 'localhost',
+                'user' => 'test',
+            'password' => 'test',
+                'name' => 'humanas',
+        );
+        
+        if (!Registry::isRegistered('database_information')) {
+            Registry::set('database_information', $databaseInformation);
+        }
     }
     
     public function testCreate()
     {
         //SelectUsernameCount Statement
-        $statement = StatementFactory::create('SelectUsernameCount');
+        $statement = StatementFactory::create(
+            array('name' => 'SelectUsernameCount')
+        );
         $this->assertInstanceOf('\OJSscript\Statement\Statement', $statement);
+
+        $this->assertTrue($statement->isPrepared());
     }
     
     public function testGetStatementInfo() {
         //SelectUsernameCount Statement
         $location = StatementLocator::getLocation('SelectUsernameCount');
-        assertTrue(is_file($location));
+        $this->assertTrue(is_file($location));
     }
 }

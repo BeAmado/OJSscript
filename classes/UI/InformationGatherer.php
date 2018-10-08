@@ -18,6 +18,7 @@
  */
 
 namespace OJSscript\UI;
+use OJSscript\Core\Registry;
 
 /**
  * Description of InformationGatherer
@@ -44,10 +45,14 @@ class InformationGatherer
         $args = array('host', 'user', 'password', 'name')
     ) {
         $returnData = array();
-        
-        foreach ($args as $item) {
-            $question = 'Enter the database ' . $item . ' : ';
-            $returnData[$item] = $this->inquirer->inquire($question);
+       
+        if (Registry::get('RUNNING_TEST')) {
+            $returnData = Registry::get('database_information');
+        } else {
+            foreach ($args as $item) {
+                $question = 'Enter the database ' . $item . ' : ';
+                $returnData[$item] = $this->inquirer->inquire($question);
+            }
         }
         
         return $returnData;

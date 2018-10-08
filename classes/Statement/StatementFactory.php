@@ -63,7 +63,7 @@ class StatementFactory
      * @throws \Exception
      * @return void
      */
-    private static function addStatementParameters(&$statement, $statementInfo) 
+    public static function addStatementParameters(&$statement, $statementInfo) 
     {
         if (!self::isValidStatementInfo($statementInfo)) {
             throw new \Exception('Invalid structure for the prepared statement '
@@ -87,7 +87,7 @@ class StatementFactory
      * @return array
      * @throws \Exception
      */
-    private static function getStatementInfo($statementName)
+    public static function getStatementInfo($statementName)
     {
         $errorMessage = '';
         
@@ -119,32 +119,33 @@ class StatementFactory
      * Tries to create an instance of \OJSscript\Statement\Statement
      * and configurate it. If any of the steps in the configuration process
      * fails, it returns false. Otherwise it returns the instance created.
-     * @param string $statementName
+     * @param array $args -> must contain the name of the statement, 
+     * like for example: array('name' => 'SelectArticleFiles')
      * @return \OJSscript\Statement\Statement
      */
-    public static function &create($statementName) 
+    public static function create($args = array()) 
     {
-        try {
-            $statement =& new Statement();
-            $statementInfo = self::getStatementInfo($statementName);
-            self::addStatementParameters($statement, $statementInfo);
-            
-            $statement->setQuery($statementInfo['query']);
-            
-            if (!Registry::isRegistered('dbConnection')) {
-                Registry::set(
-                    'dbConnection', 
-                    DatabaseConnectionFactory::create()
-                );
-            }
-            $statement->setConnection(Registry::get('dbConnection'));
-            
-            $statement->prepareItself();
+        /* @var $statementName string */
+        $statementName = $args['name'];
         
-            return $statement;
-        } catch (\Exception $exc) {
-            //TREAT BETTER
-            echo $exc->getTraceAsString();
+        $statement = new Statement();
+        
+        /* @var $statementInfo array */
+        $statementInfo = self::getStatementInfo($statementName);
+        self::addStatementParameters($statement, $statementInfo);
+
+        $statement->setQuery($statementInfo['query']);
+
+        if (!Registry::isRegistered('dbConnection')) {
+            Registry::set(
+                'dbConnection', 
+                DatabaseConnectionFactory::create()
+            );
         }
+        $statement->setConnection(Registry::get('dbConnection'));
+
+        $statement->prepareItself();
+
+        return $statement;
     }
 }
