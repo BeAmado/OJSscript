@@ -19,13 +19,14 @@
 
 namespace OJSscript\Statement;
 use OJSscript\Interfaces\Cloneable;
+use OJSscript\Interfaces\ArrayRepresentation;
 
 /**
  * Encapsulates the Prepared Statement parameters
  *
  * @author bernardo
  */
-class StatementParameter implements Cloneable
+class StatementParameter implements Cloneable, ArrayRepresentation
 {
     /**
      * The Prepared Statement parameter's placeholder
@@ -112,6 +113,10 @@ class StatementParameter implements Cloneable
         $this->name = $name;
     }
 
+    /**
+     * Returns a new instance with same properties.
+     * @return \OJSscript\Statement\StatementParameter
+     */
     public function cloneInstance()
     {
         return new StatementParameter(
@@ -122,6 +127,10 @@ class StatementParameter implements Cloneable
         );
     }
     
+    /**
+     * Returns a clone of the StatementParameter
+     * @return \OJSscript\Statement\StatementParameter
+     */
     public function __clone()
     {
         return $this->cloneInstance();

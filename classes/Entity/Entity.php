@@ -18,6 +18,9 @@
  */
 
 namespace OJSscript\Entity;
+use OJSscript\Interfaces\Cloneable;
+use OJSscript\Interfaces\ArrayRepresentation;
+use OJSscript\Core\InputValidator;
 
 /**
  * Generic class to encapsulate an object properties. This class is to be 
@@ -25,7 +28,7 @@ namespace OJSscript\Entity;
  *
  * @author bernardo
  */
-class Entity 
+class Entity implements Cloneable, ArrayRepresentation
 {
     
     /**
@@ -72,10 +75,58 @@ class Entity
      * Sets the specified entity's property.
      * @param string $propertyName
      * @param mixed $propertyValue
-     * @return void
+     * @return boolean
      */
     public function setProperty($propertyName, $propertyValue)
     {
-        $this->properties[$propertyName] = $propertyValue;
+        if (InputValidator::validate($propertyName, 'string')) {
+            $this->properties[$propertyName] = $propertyValue;
+            return true;
+        } else {
+            return false;
+        }
     }
+
+    /**
+     * Returns a new instance with the same properties.
+     * @return \OJSscript\Entity\Entity
+     */
+    public function cloneInstance()
+    {
+        $clone = new Entity();
+        foreach ($this->properties as $propertyName => $propertyValue) {
+            $clone->setProperty($propertyName, $propertyValue);
+        }
+        return $clone;
+    }
+    
+    /**
+     * Clones the Entity
+     * @return \OJSscript\Entity\Entity
+     */
+    public function __clone()
+    {
+        return $this->cloneInstance();
+    }
+    
+    /**
+     * Array representation of the Entity
+     * @return array
+     */
+    public function asArray()
+    {
+        $arrReturn = array();
+        foreach ($this->properties as $propertyName => $propertyValue) {
+            if (is_a($propertyValue, '\OJSscript\Entity\Entity')) {
+                /* @var $propertyValue Entity */
+                $arrReturn[$propertyName] = $propertyValue->asArray();
+            }
+            else {
+                $arrReturn[$propertyName] = $propertyValue;
+            }
+        }
+        
+        return $arrReturn;
+    }
+
 }
