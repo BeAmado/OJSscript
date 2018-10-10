@@ -36,6 +36,12 @@ class EntitySetting implements Cloneable, ArrayRepresentation
     protected $id;
     
     /**
+     * The type of the Entity. For example: article, user, section.
+     * @var string
+     */
+    protected $entityType;
+    
+    /**
      * The setting locale
      * @var string
      */
@@ -59,26 +65,15 @@ class EntitySetting implements Cloneable, ArrayRepresentation
      */
     protected $type;
     
-    /**
-     * Extra fields in the setting structure. For example the user_setting
-     * table has the fields assoc_id and assoc_type in OJS 2.4.8
-     * @var array
-     */
-    protected $extra;
-    
-    public function __construct(
-        $id = null,
-        $locale = null,
-        $name = null,
-        $value = null,
-        $type = null
-    ) {
-        $this->extra = array();
-        $this->setId($id);
-        $this->setLocale($locale);
-        $this->setName($name);
-        $this->setType($type);
-        $this->setValue($value);
+    public function __construct($entityType) 
+    {
+        if (InputValidator::validate($entityType, 'string')) {
+            $this->entityType = $entityType;
+        } else {
+            //TREAT BETTER
+            $message = 'Invalid entity type "' . $entityType . '"';
+            throw new Exception($message);
+        }
     }
 
     public function getId()
@@ -104,38 +99,6 @@ class EntitySetting implements Cloneable, ArrayRepresentation
     public function getType()
     {
         return $this->type;
-    }
-
-    public function getExtraProperty($propertyName)
-    {
-        if ($this->hasExtraProperty($propertyName)) {
-            return $this->extra[$propertyName];
-        }
-        return false;
-    }
-    
-    
-    public function hasExtraProperty($propertyName)
-    {
-        if (array_key_exists($propertyName, $this->extra)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-    
-    public function hasExtraProperties()
-    {
-        if (empty($this->extra)) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-    
-    public function listExtraProperties()
-    {
-        return array_keys($this->extra);
     }
 
     /**
@@ -214,41 +177,21 @@ class EntitySetting implements Cloneable, ArrayRepresentation
     }
 
     /**
-     * Sets some extra property to the setting
-     * @param string $propertyName
-     * @param string $propertyValue
-     * @return boolean
-     */
-    public function setExtraProperty($propertyName, $propertyValue)
-    {
-        if (InputValidator::validate($propertyName, 'string')) {
-            $this->extra[$propertyName] = $propertyValue;
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
      * Returns an array representation of the EntitySetting
      * @return array
      */
     public function asArray()
     {
-        /* @var $arrReturn array */
-        $arrReturn = array(
-                'id' => $this->getId(),
-            'locale' => $this->getLocale(),
-              'name' => $this->getName(),
-             'value' => $this->getValue(),
-              'type' => $this->getType(),
+        /* @var $arrayRepresentation array */
+        $arrayRepresentation = array(
+            $this->entityType.'_id' => $this->getId(),
+                           'locale' => $this->getLocale(),
+                     'setting_name' => $this->getName(),
+                    'setting_value' => $this->getValue(),
+                     'setting_type' => $this->getType(),
         );
         
-        foreach ($this->extra as $key => $value) {
-            $arrReturn[$key] = $value;
-        }
-        
-        return $arrReturn;
+        return $arrayRepresentation;
     }
 
     /**

@@ -51,7 +51,7 @@ class Entity implements Cloneable, ArrayRepresentation
      * @param string $propertyName
      * @return boolean
      */
-    public function hasProperty($propertyName)
+    protected function hasProperty($propertyName)
     {
         return array_key_exists($propertyName, $this->properties);
     }
@@ -62,7 +62,7 @@ class Entity implements Cloneable, ArrayRepresentation
      * @param string $propertyName
      * @return mixed
      */
-    public function getProperty($propertyName)
+    protected function getProperty($propertyName)
     {
         if ($this->hasProperty($propertyName)) {
             return $this->properties[$propertyName];
@@ -77,7 +77,7 @@ class Entity implements Cloneable, ArrayRepresentation
      * @param mixed $propertyValue
      * @return boolean
      */
-    public function setProperty($propertyName, $propertyValue)
+    protected function setProperty($propertyName, $propertyValue)
     {
         if (InputValidator::validate($propertyName, 'string')) {
             $this->properties[$propertyName] = $propertyValue;
@@ -89,7 +89,7 @@ class Entity implements Cloneable, ArrayRepresentation
 
     /**
      * Returns a new instance with the same properties.
-     * @return \OJSscript\Entity\Entity
+     * @return Entity
      */
     public function cloneInstance()
     {
@@ -102,7 +102,7 @@ class Entity implements Cloneable, ArrayRepresentation
     
     /**
      * Clones the Entity
-     * @return \OJSscript\Entity\Entity
+     * @return Entity
      */
     public function __clone()
     {

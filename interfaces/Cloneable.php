@@ -20,10 +20,14 @@
 namespace OJSscript\Interfaces;
 
 /**
- *
+ * implement cloning functionality
  * @author bernardo
  */
 interface Cloneable
 {
+    /**
+     * Returns a new instance of the object with the same properties.
+     * @return \Object
+     */
     public function cloneInstance();
 }

@@ -17,17 +17,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OJSscript\Interfaces;
+namespace OJSscript\Entity;
 
 /**
- * Interface to represent the object as an array
+ * Represents an OJS article which might have the following properties
+ * 1 - article_id
+ * 
+ *
  * @author bernardo
  */
-interface ArrayRepresentation
+class Article extends Entity
 {
-    /**
-     * Returns an array representation of the object
-     * @return array
-     */
-    public abstract function asArray();
+    public function getArticleId()
+    {
+        return $this->getProperty('article_id');
+    }
+    
+    public function setArticleId($id)
+    {
+        return $this->setProperty('article_id', $id);
+    }
 }

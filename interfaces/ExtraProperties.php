@@ -20,14 +20,16 @@
 namespace OJSscript\Interfaces;
 
 /**
- * Interface to represent the object as an array
+ *
  * @author bernardo
  */
-interface ArrayRepresentation
+interface ExtraProperties
 {
-    /**
-     * Returns an array representation of the object
-     * @return array
-     */
-    public abstract function asArray();
+    public abstract function hasExtraProperty($propertyName);
+    
+    public abstract function getExtraProperty($propertyName);
+    
+    public abstract function setExtraProperty($propertyName);
+    
+    //public abstract function listExtraProperties();
 }
