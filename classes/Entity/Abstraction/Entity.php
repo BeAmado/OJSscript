@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OJSscript\Entity;
+namespace OJSscript\Entity\Abstraction;
 use OJSscript\Interfaces\Cloneable;
 use OJSscript\Interfaces\ArrayRepresentation;
 use OJSscript\Core\InputValidator;
@@ -117,11 +117,21 @@ class Entity implements Cloneable, ArrayRepresentation
     {
         $arrReturn = array();
         foreach ($this->properties as $propertyName => $propertyValue) {
-            if (is_a($propertyValue, '\OJSscript\Entity\Entity')) {
+            if (is_a(
+                $propertyValue,
+                '\OJSscript\Entity\Abstraction\Entity'
+            )) {
                 /* @var $propertyValue Entity */
                 $arrReturn[$propertyName] = $propertyValue->asArray();
-            }
-            else {
+                
+            } elseif (is_a(
+                $propertyValue,
+                '\OJSscript\Entity\Abstraction\EntitySetting'
+            )) {
+                /* @var $propertyValue EntitySetting */
+                $arrReturn[$propertyName] = $propertyValue->asArray();
+                
+            } else {
                 $arrReturn[$propertyName] = $propertyValue;
             }
         }

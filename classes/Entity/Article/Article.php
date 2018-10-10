@@ -17,12 +17,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OJSscript\Entity;
+namespace OJSscript\Entity\Article;
+use OJSscript\Entity\Abstraction\Entity;
 
 /**
  * Represents an OJS article which might have the following properties
- * 1 - article_id
- * 
+ *  1 - article_id
+ *  2 - locale
+ *  3 - user_id
+ *  4 - journal_id
+ *  5 - section_id
+ *  6 - language
+ *  7 - comments_to_ed
+ *  8 - citations
+ *  9 - date_submitted
+ * 10 - last_modified
+ * 11 - date_status_modified
+ * 12 - status
+ * 13 - submission_progress
+ * 14 - current_round
+ * 15 - submission_file_id
+ * 16 - revised_file_id
+ * 17 - review_file_id
+ * 18 - editor_file_id
+ * 19 - pages
+ * 20 - fast_tracked
+ * 21 - hide_author
+ * 22 - comments_status
  *
  * @author bernardo
  */

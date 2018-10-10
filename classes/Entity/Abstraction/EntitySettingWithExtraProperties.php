@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OJSscript\Entity;
+namespace OJSscript\Entity\Abstraction;
 use OJSscript\Core\InputValidator;
 use OJSscript\Interfaces\ExtraProperties;
 use OJSscript\Interfaces\ExtraPropertiesIndicator;
