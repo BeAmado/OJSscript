@@ -75,10 +75,21 @@ class Entity implements Cloneable, ArrayRepresentation
      * Sets the specified entity's property.
      * @param string $propertyName
      * @param mixed $propertyValue
+     * @param string $propertyType
      * @return boolean
      */
-    protected function setProperty($propertyName, $propertyValue)
-    {
+    protected function setProperty(
+        $propertyName,
+        $propertyValue,
+        $propertyType = null
+    ) {
+        if (
+            $propertyType !== null &&
+            !InputValidator::validate($propertyValue, $propertyType)
+        ) {
+            return false;
+        }
+        
         if (InputValidator::validate($propertyName, 'string')) {
             $this->properties[$propertyName] = $propertyValue;
             return true;

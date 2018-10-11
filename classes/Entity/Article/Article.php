@@ -22,28 +22,28 @@ use OJSscript\Entity\Abstraction\Entity;
 
 /**
  * Represents an OJS article which might have the following properties
- *  1 - article_id
- *  2 - locale
- *  3 - user_id
- *  4 - journal_id
- *  5 - section_id
- *  6 - language
- *  7 - comments_to_ed
- *  8 - citations
- *  9 - date_submitted
- * 10 - last_modified
- * 11 - date_status_modified
- * 12 - status
- * 13 - submission_progress
- * 14 - current_round
- * 15 - submission_file_id
- * 16 - revised_file_id
- * 17 - review_file_id
- * 18 - editor_file_id
- * 19 - pages
- * 20 - fast_tracked
- * 21 - hide_author
- * 22 - comments_status
+ *  1 - article_id              NULL -> No
+ *  2 - locale                  NULL -> Yes
+ *  3 - user_id                 NULL -> No
+ *  4 - journal_id              NULL -> No
+ *  5 - section_id              NULL -> Yes
+ *  6 - language                NULL -> Yes
+ *  7 - comments_to_ed          NULL
+ *  8 - citations               NULL
+ *  9 - date_submitted          NULL
+ * 10 - last_modified           NULL
+ * 11 - date_status_modified    NULL
+ * 12 - status                  NULL
+ * 13 - submission_progress     NULL
+ * 14 - current_round           NULL
+ * 15 - submission_file_id      NULL
+ * 16 - revised_file_id         NULL
+ * 17 - review_file_id          NULL
+ * 18 - editor_file_id          NULL
+ * 19 - pages                   NULL
+ * 20 - fast_tracked            NULL
+ * 21 - hide_author             NULL
+ * 22 - comments_status         NULL
  *
  * @author bernardo
  */
@@ -56,6 +56,24 @@ class Article extends Entity
     
     public function setArticleId($id)
     {
-        return $this->setProperty('article_id', $id);
+        if (is_numeric($id)) {
+            $id = (int) $id;
+        }
+        
+        return $this->setProperty('article_id', $id, 'integer');
+    }
+    
+    public function getLocale()
+    {
+        return $this->getProperty('locale');
+    }
+    
+    public function setLocale($locale)
+    {
+        if ($locale === null) {
+            return $this->setProperty('locale', null);
+        } else {
+            return $this->setProperty('locale', $locale, 'string');
+        }
     }
 }
