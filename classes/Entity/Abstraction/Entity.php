@@ -76,12 +76,16 @@ class Entity implements Cloneable, ArrayRepresentation
      * @param string $propertyName
      * @param mixed $propertyValue
      * @param string $propertyType
+     * @param boolean $nullable
+     * @param integer $maxSize
      * @return boolean
      */
     protected function setProperty(
         $propertyName,
         $propertyValue,
-        $propertyType = null
+        $propertyType = null,
+        $nullable = false,
+        $maxSize = null
     ) {
         if (
             $propertyType !== null &&
@@ -90,9 +94,73 @@ class Entity implements Cloneable, ArrayRepresentation
             return false;
         }
         
+        if (!$nullable && ($propertyValue === null)) {
+            return false;
+        } 
+        
+        if (is_string($propertyValue) && $maxSize > 0) {
+            $propertyValue = substr($propertyValue, 0, $maxSize);
+        } 
+        elseif (!$nullable && ($propertyType === 'integer')) {
+            $propertyValue = (int) $propertyValue;
+        }
+        
         if (InputValidator::validate($propertyName, 'string')) {
             $this->properties[$propertyName] = $propertyValue;
             return true;
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns an array with the entries 'operation' and 'tableName' 
+     * @param string $methodName
+     * @return array
+     */
+    protected function separateOperationAndTableName($methodName)
+    {
+        $matches = array();
+        preg_match_all('/[A-Z][^A-Z]*/', $methodName, $matches);
+        
+        /* @var $Words array */
+        $Words = $matches[0];
+        
+        //the stop position is the position of the first capital letter
+        $stopPosition = strpos($methodName, $Words[0]);
+        
+        //the quantity of characters the substring must have
+        $length = $stopPosition + 1;
+        
+        $operation = substr($methodName, 0, $length);
+        
+        //the array with the words in lowercase
+        $words = array_map('strtolower', $Words);
+        
+        $tableName = implode('_', $words);
+        
+        return array('operation' => $operation, 'tableName' => $tableName);
+    }
+    
+    /**
+     * This method is implemented in order to avoid declare multiple getters for
+     * the Entities.
+     * @param string $name
+     * @param mixed $arguments
+     * @return mixed
+     */
+    public function __call($name, $arguments = null)
+    {
+        if (!empty($arguments)) {
+            return false;
+        }
+        
+        $arr = $this->separateOperationAndTableName($name);
+        $operation = $arr['operation'];
+        $tableName = $arr['tableName'];
+        
+        if ($operation === 'get') {
+            return $this->getProperty($tableName);
         } else {
             return false;
         }
