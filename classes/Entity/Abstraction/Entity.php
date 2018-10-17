@@ -48,10 +48,11 @@ class Entity implements Cloneable, ArrayRepresentation
     
     /**
      * Checks if the entity has the specified property.
-     * @param string $propertyName
+     * 
+     * @param string $propertyName - The name of the property being searched.
      * @return boolean
      */
-    protected function hasProperty($propertyName)
+    public function hasProperty($propertyName)
     {
         return array_key_exists($propertyName, $this->properties);
     }
@@ -59,6 +60,7 @@ class Entity implements Cloneable, ArrayRepresentation
     /**
      * Get the specified entity's property. If the property does not exist
      * returns false.
+     * 
      * @param string $propertyName
      * @return mixed
      */
@@ -73,6 +75,7 @@ class Entity implements Cloneable, ArrayRepresentation
     
     /**
      * Sets the specified entity's property.
+     * 
      * @param string $propertyName
      * @param mixed $propertyValue
      * @param string $propertyType

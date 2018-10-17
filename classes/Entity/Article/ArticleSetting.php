@@ -41,6 +41,7 @@ class ArticleSetting extends EntitySetting implements ExtraPropertiesIndicator
     /**
      * Always returns false, since article_settings do not have extra 
      * properties.
+     * 
      * @return boolean
      */
     public function hasExtraProperties()
