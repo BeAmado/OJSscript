@@ -51,6 +51,21 @@ use OJSscript\Interfaces\LoadFromArray;
  */
 class Article extends Entity implements LoadFromArray
 {
+    
+    public function __construct()
+    {
+        parent::__construct();
+        $this->notNullableProperties[] = 'article_id';
+        $this->notNullableProperties[] = 'user_id';
+        $this->notNullableProperties[] = 'journal_id';
+        $this->notNullableProperties[] = 'status';
+        $this->notNullableProperties[] = 'comments_status';
+        $this->notNullableProperties[] = 'submission_progress';
+        $this->notNullableProperties[] = 'current_round';
+        $this->notNullableProperties[] = 'fast_tracked';
+        $this->notNullableProperties[] = 'hide_author';
+    }
+    
     /**
      * Sets the article id.
      * 
@@ -284,36 +299,6 @@ class Article extends Entity implements LoadFromArray
     public function setCommentsStatus($status)
     {
         return $this->setProperty('comments_status', $status, 'integer');
-    }
-    
-    /**
-     * Check if the array is valid for loading the article's information.
-     * 
-     * @param array $array
-     * @return boolean
-     */
-    protected function arrayIsValid($array)
-    {
-        if (!is_array($array) || empty($array)) {
-            return false;
-        }
-        
-        $requiredFields = array(
-            'article_id',    'user_id',         'journal_id',
-            'status',        'comments_status', 'submission_progress', 
-            'current_round', 'fast_tracked',    'hide_author', 
-        );
-        
-        $fields = array_keys($array);
-        
-        $intersection = array_intersect($requiredFields, $fields);
-        
-        if (count($intersection) === count($requiredFields)) {
-            return true;
-        } else {
-            return false;
-        }
-        
     }
     
     /**

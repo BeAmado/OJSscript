@@ -20,6 +20,7 @@
 namespace OJSscript\Entity\Abstraction;
 use OJSscript\Interfaces\Cloneable;
 use OJSscript\Interfaces\ArrayRepresentation;
+use OJSscript\Interfaces\LoadFromArray;
 use OJSscript\Core\InputValidator;
 
 /**
@@ -28,15 +29,36 @@ use OJSscript\Core\InputValidator;
  *
  * @author bernardo
  */
-class Entity implements Cloneable, ArrayRepresentation
+class Entity implements Cloneable, ArrayRepresentation, LoadFromArray
 {
     
     /**
-     * Array that encapsulates the object's properties
+     * Array that encapsulates the object's properties.
+     * 
      * @var array
      */
     protected $properties;
     
+    /**
+     * Array that encapsulates the Entities, or array of Entities, that are 
+     * logical children of the object. 
+     * 
+     * For example: if the Entity is an article then the childProperties would 
+     * be array of article_files, array of article_galleys(array) and so on...
+     * 
+     * @var array
+     */
+    protected $childEntities;
+
+
+    /**
+     * Array that stores the names of the properties that cannot be null.
+     * 
+     * @var array
+     */
+    protected $notNullableProperties;
+
+
     /**
      * Initializes the entity's properties with as an empty array.
      * @return void
@@ -44,6 +66,7 @@ class Entity implements Cloneable, ArrayRepresentation
     public function __construct()
     {
         $this->properties = array();
+        $this->notNullableProperties = array();
     }
     
     /**
@@ -58,13 +81,59 @@ class Entity implements Cloneable, ArrayRepresentation
     }
     
     /**
+     * Checks if the entity is well formed.
+     * 
+     * The Entity is considered _well formed_ if *it has all its required 
+     * properties* and *not any of them is null*.
+     * By default this functions returns a boolean which indicates whether or 
+     * not the Entity is _well formed_. If an argument is passed and it is 
+     * evaluated as a boolean true value, then an array with the fields 
+     * 'wellFormed' and 'informations' is returned. 
+     * 
+     * @param boolean $returnInformations - Whether or not to return an array 
+     * with informations. The default is _false_.
+     * 
+     * @return boolean|array
+     */
+    public function isWellFormed($returnInformations = false)
+    {
+        $info = '';
+        $wellFormed = true;
+        foreach ($this->notNullableProperties as $notNullableProperty) {
+            if (!$this->hasProperty($notNullableProperty)) {
+                $info .= 'Missing the required property "'
+                    . $notNullableProperty . '".' . PHP_EOL;
+                $wellFormed = false;
+            }
+            elseif ($this->getProperty($notNullableProperty) === null) {
+                $info .= 'The property "' . $notNullableProperty . '" cannot '
+                    . 'be null.' . PHP_EOL;
+                $wellFormed = false;
+            }
+        }
+        
+        if ($wellFormed) {
+            $info .= 'The Entity is well formed.' . PHP_EOL;
+        }
+        
+        if ($returnInformations) {
+            return array(
+                'wellFormed' => $wellFormed,
+                'informations' => $info,
+            );
+        } else {
+            return $wellFormed;
+        }
+    }
+    
+    /**
      * Get the specified entity's property. If the property does not exist
      * returns false.
      * 
      * @param string $propertyName
      * @return mixed
      */
-    protected function getProperty($propertyName)
+    public function getProperty($propertyName)
     {
         if ($this->hasProperty($propertyName)) {
             return $this->properties[$propertyName];
@@ -83,29 +152,38 @@ class Entity implements Cloneable, ArrayRepresentation
      * @param integer $maxSize
      * @return boolean
      */
-    protected function setProperty(
+    public function setProperty(
         $propertyName,
         $propertyValue,
         $propertyType = null,
         $nullable = false,
         $maxSize = null
     ) {
+        if (!$nullable && ($propertyValue === null)) {
+            return false;
+        } 
+        elseif (!$nullable && ($propertyType === 'integer')) {
+            /*
+             * coerce the type to an integer. This way the integers fetched from
+             *xml data, which might come as strings, can be directly pass as
+             *arguments
+             */
+            $propertyValue = (int) $propertyValue;
+        }
+        elseif (
+            is_string($propertyValue)           && 
+            $maxSize > 0                        && 
+            strlen($propertyValue) > $maxSize
+        ) {
+            //Cut the string to fit the size that is accepted by tthe database
+            $propertyValue = substr($propertyValue, 0, $maxSize);
+        } 
+        
         if (
             $propertyType !== null &&
             !InputValidator::validate($propertyValue, $propertyType)
         ) {
             return false;
-        }
-        
-        if (!$nullable && ($propertyValue === null)) {
-            return false;
-        } 
-        
-        if (is_string($propertyValue) && $maxSize > 0) {
-            $propertyValue = substr($propertyValue, 0, $maxSize);
-        } 
-        elseif (!$nullable && ($propertyType === 'integer')) {
-            $propertyValue = (int) $propertyValue;
         }
         
         if (InputValidator::validate($propertyName, 'string')) {
@@ -192,7 +270,31 @@ class Entity implements Cloneable, ArrayRepresentation
     }
     
     /**
+     * Check if the array is valid for loading entity's information.
+     * 
+     * @param array $array
+     * @return boolean
+     */
+    protected function arrayIsValid($array)
+    {
+        if (!is_array($array) || empty($array)) {
+            return false;
+        }
+       
+        $fields = array_keys($array);
+        
+        $intersection = array_intersect($this->notNullableProperties, $fields);
+        
+        if (count($intersection) === count($this->notNullableProperties)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    /**
      * Array representation of the Entity
+     * 
      * @return array
      */
     public function asArray()
@@ -219,6 +321,11 @@ class Entity implements Cloneable, ArrayRepresentation
         }
         
         return $arrReturn;
+    }
+
+    public function loadArray($array)
+    {
+        
     }
 
 }
