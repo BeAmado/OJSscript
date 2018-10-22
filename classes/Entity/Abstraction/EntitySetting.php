@@ -100,6 +100,11 @@ class EntitySetting implements Cloneable, ArrayRepresentation
     {
         return $this->type;
     }
+    
+    public function getEntityType()
+    {
+        return $this->entityType;
+    }
 
     /**
      * Sets the id 

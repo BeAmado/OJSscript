@@ -1,0 +1,22 @@
+{
+    "Integers": {
+        "I1": "tinyint(4)",
+        "I2": "smallint(6)",
+        "I4": "int(11)",
+        "I8": "bigint(20)"
+    },
+    
+    "Float": {
+        "F": "double"
+    },
+    
+    "Strings": {
+        "C": "varchar",
+        "T": "datetime",
+        "Obs": [
+            "The varchar most of the time comes with a number.",
+            "They always come with an attribute size, specifying the maximum ",
+            "size of the string."
+        ]
+    }
+}
