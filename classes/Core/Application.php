@@ -1,7 +1,7 @@
 <?php
 
-/* 
- * Copyright (C) 2018 Bernardo Amado
+/*
+ * Copyright (C) 2018 bernardo
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,12 +17,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OJSscript;
+namespace OJSscript\Core;
 
-define('BASE_DIR', dirname(__FILE__));
+/**
+ * Description of Application
+ *
+ * @author bernardo
+ */
+class Application
+{
+    
+    protected function begin()
+    {
+        echo 'Application begin' . PHP_EOL;
+    }
+    
+    protected function end()
+    {
+        echo 'Application end' . PHP_EOL;
+    }
 
-require_once BASE_DIR .  '/includes/bootstrap.php';
-
-$app = new \OJSscript\Core\Application();
-
-$app->run();
+    public function run($args = array())
+    {
+        $this->begin();
+        
+        //middle processing
+        
+        $this->end();
+        
+        return 0;
+    }
+}

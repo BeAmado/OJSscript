@@ -87,6 +87,14 @@ class EntityValidator
     
     /**
      * 
+     */
+    private function getPropertiesNames()
+    {
+        
+    }
+    
+    /**
+     * 
      * @param string $type
      * @param mixed $value
      * @return array  
@@ -235,7 +243,7 @@ class EntityValidator
     public function validateEntity($entity)
     {
         if (!is_a($entity, '\OJSscript\Entity\Abstraction\Entity') ||
-            $this->tableName !== $entity->getName()) {
+            $this->tableName !== $entity->getTableName()) {
             return false;
         }
         

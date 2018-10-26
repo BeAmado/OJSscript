@@ -27,6 +27,10 @@ if (!defined('LINKS_DIR')) {
     define('LINKS_DIR', dirname(__FILE__) . '/../queries/links');
 }
 
+if (!defined('XML_SCHEMA_DIR')) {
+    define('XML_SCHEMA_DIR', dirname(__FILE__) . '/../xml_schema/ojs2');
+}
+
 /**
  * PSR-4 compliant autoloader
  * Autoload function implementation copied from PSR-4 example

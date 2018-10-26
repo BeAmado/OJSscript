@@ -20,7 +20,6 @@
 namespace OJSscript\Entity\Abstraction;
 use OJSscript\Interfaces\Cloneable;
 use OJSscript\Interfaces\ArrayRepresentation;
-use OJSscript\Interfaces\LoadFromArray;
 use OJSscript\Core\InputValidator;
 
 
@@ -30,7 +29,7 @@ use OJSscript\Core\InputValidator;
  *
  * @author bernardo
  */
-class Entity implements Cloneable, ArrayRepresentation, LoadFromArray
+class Entity implements Cloneable, ArrayRepresentation
 {
     /**
      * The name of the table that the Entity represents.
@@ -100,7 +99,7 @@ class Entity implements Cloneable, ArrayRepresentation, LoadFromArray
      * 
      * @return string
      */
-    public function getName()
+    public function getTableName()
     {
         return $this->tableName;
     }
@@ -114,7 +113,7 @@ class Entity implements Cloneable, ArrayRepresentation, LoadFromArray
      */
     public function getEntityType()
     {
-        $tableName = $this->getName();
+        $tableName = $this->getTableName();
         if (substr($tableName, -3) === 'ies') {
             return substr($tableName, 0, -1) . 'y';
         }
@@ -137,102 +136,13 @@ class Entity implements Cloneable, ArrayRepresentation, LoadFromArray
     }
     
     /**
-     * Returns a clone of the EntitySetting.
-     * 
-     * If the setting does not exist, false is returned.
-     * 
-     * @param string $settingName
-     * @param string $locale
-     * @return mixed
-     */
-    public function getSetting($settingName, $locale)
-    {
-        /* @var $setting EntitySetting */
-        foreach ($this->settings as $setting) {
-            if ($setting->getName() === $settingName &&
-                $setting->getLocale() === $locale) {
-                return $setting->cloneInstance();
-            }
-        }
-        
-        return false;
-    }
-    
-    /**
-     * Returns an array with clones of the settings.
-     * 
-     * @return array
-     */
-    public function getSettings()
-    {
-        /* @var $clonedSettings array */
-        $clonedSettings = array();
-        
-        /* @var $setting EntitySetting */
-        foreach ($this->settings as $setting) {
-            $clonedSettings[] = $setting->cloneInstance();
-        }
-        
-        return $clonedSettings;
-    }
-    
-    /**
-     * Checks whether or not teh Entity has associated entities in it.
+     * Checks whether or not the Entity has associated entities in it.
      * 
      * @return boolean
      */
     public function hasAssociatedEntities()
     {
         return is_array($this->associatedEntities);
-    }
-    
-    /**
-     * Clones the array of the specified associate Entity.
-     * 
-     * @return array
-     */
-    protected function cloneAssociatedEntities($entityName)
-    {
-        /* @var $clones array */
-        $clones = array();
-        
-        /* @var $entity Entity */
-        foreach ($this->associatedEntities[$entityName] as $entity) {
-            $clones[] = $entity->cloneInstance();
-        }
-        
-        return $clones;
-    }
-    
-    /**
-     * Returns an array of clones of the associated entities.
-     * 
-     * The parameter "entitiesNames is an array with the names of the entities 
-     * to be fetched (cloned).
-     * 
-     * @param array $entitiesNames
-     * @return array
-     */
-    public function getAssociatedEntities($entitiesNames)
-    {
-        /* @var $associatedEntities array */
-        $associatedEntities = array();
-        
-        /* @var $entityName string */
-        foreach ($entitiesNames as $entityName) {
-            
-            if (array_key_exists($entityName, $this->associatedEntities)) {
-                $associatedEntities[$entityName] = 
-                    $this->cloneAssociatedEntities($entityName);
-            } else {
-                $associatedEntities[$entityName] = 'There is not any '
-                    . 'associated entity that corresponds to the name "'
-                    . $entityName . '"';
-            }
-            
-        }
-        
-        return $associatedEntities;
     }
     
     /**
@@ -276,7 +186,7 @@ class Entity implements Cloneable, ArrayRepresentation, LoadFromArray
         $propertyValue
     ) {
         /* @var $validator EntityValidator */
-        $validator = EntityValidatorRegistry::get($this->getName());
+        $validator = EntityValidatorRegistry::get($this->getTableName());
         
         /* @var $result array */
         $result = $validator->validateProperty($propertyName, $propertyValue);
@@ -298,23 +208,43 @@ class Entity implements Cloneable, ArrayRepresentation, LoadFromArray
      */
     public function addSetting($setting)
     {
-        if (!is_a($setting, '\OJSscript\Entity\Abstraction\EntitySetting')) {
+        if (
+            !$this->hasSettings() ||
+            !is_a($setting, '\OJSscript\Entity\Abstraction\EntitySetting') ||
+            ($setting->getEntityType() !== $this->getEntityType())
+        ) {
             return false;
-        } elseif ($setting->getEntityType() !== $this->getEntityType()) {
-            return false;
+            
         } else {
             $this->settings[] = $setting;
             return true;
         }
     }
     
+    /**
+     * Adds an Entity to the associatedEntities array.
+     * 
+     * @param Entity $entity
+     * 
+     * @return boolean
+     */
     public function addAssociatedEntity($entity)
     {
-        
+        if (
+            !$this->hasAssociatedEntities() ||
+            !is_a($entity, '\OJSscript\Entity\Abstraction\Entity')
+        ) {
+            return false;
+            
+        } else {
+            $this->associatedEntities[$entity->getTableName()] = $entity;
+            return true;
+        }
     }
 
     /**
      * Returns a new instance with the same properties.
+     * 
      * @return Entity
      */
     public function cloneInstance()
@@ -327,12 +257,48 @@ class Entity implements Cloneable, ArrayRepresentation, LoadFromArray
     }
     
     /**
-     * Clones the Entity
+     * Clones the Entity.
+     * 
      * @return Entity
      */
     public function __clone()
     {
         return $this->cloneInstance();
+    }
+    
+    /**
+     * Returns an array representation of the entity settings.
+     * 
+     * @return array
+     */
+    private function getSettingsAsArray()
+    {
+        $settings = array();
+            
+        /* @var $setting EntitySetting */
+        foreach ($this->settings as $setting) {
+            $settings[] = $setting->asArray();
+        }
+        
+        return $settings;
+    }
+    
+    /**
+     * Returns an array containing the array representations of the associated 
+     * entities.
+     * 
+     * @param array $arrayToAppend - The array into which append the entities.
+     * 
+     * @return array
+     */
+    private function getAssociatedEntitiesAsArray(&$arrayToAppend) 
+    {
+        /* @var $associatedEntity Entity */
+        foreach ($this->associatedEntities as $associatedEntity) {
+            $arrayToAppend[$associatedEntity->getTableName()] = 
+                $associatedEntity->asArray();
+        }
+        
     }
     
     /**
@@ -357,56 +323,14 @@ class Entity implements Cloneable, ArrayRepresentation, LoadFromArray
         }
         
         if ($this->hasSettings()) {
-            $arrReturn['settings'] = array();
-            
-            /* @var $setting EntitySetting */
-            foreach ($this->settings as $setting) {
-                $arrReturn['settings'][] = $setting->asArray();
-            }
+            $arrReturn['settings'] = $this->getSettingsAsArray();
         }
         
         if ($this->hasAssociatedEntities()) {
-            
-            /* @var $associatedEntity Entity */
-            foreach ($this->associatedEntities as $associatedEntity) {
-                $arrReturn[$associatedEntity->getName()] = 
-                    $associatedEntity->asArray();
-            }
+            $this->getAssociatedEntitiesAsArray($arrReturn);
         }
         
         return $arrReturn;
     }
-
-    /**
-     * Load the entity's data from an array.
-     * 
-     * @param array $array
-     * 
-     * @return boolean
-     */
-    public function loadArray($array)
-    {
-        /* @var $validator EntityValidator */
-        $validator = EntityValidatorRegistry::get($this->getName());
-        
-        /* @var $result array */
-        $validateArray = $validator->validateArray($array);
-        
-        if (!$validateArray['isValid']) {
-            return false;
-        } 
-        
-        /* @var $associatedEntitiesNames array */
-        $associatedEntitiesNames = 
-            $validator->getAllowedAssociatedEntitiesNames();
-        
-        foreach ($array as $key => $value) {
-            if (in_array($key, $associatedEntitiesNames)) {
-                //$this->associatedEntities['key']
-            }
-            
-        }
-        
-    }
-
+    
 }

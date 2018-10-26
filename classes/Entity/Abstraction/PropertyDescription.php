@@ -30,12 +30,14 @@ class PropertyDescription
     /**
      * The name of the property, which is the name of the related 
      * field in the database.
+     * 
      * @var string
      */
     protected $name;
     
     /**
-     * The type of the property
+     * The type of the property.
+     * 
      * @var string
      */
     protected $type;
@@ -150,6 +152,8 @@ class PropertyDescription
     }
     
     /**
+     * Gets the name of the property, which is the name of the related 
+     * field in the database.
      * 
      * @return string
      */

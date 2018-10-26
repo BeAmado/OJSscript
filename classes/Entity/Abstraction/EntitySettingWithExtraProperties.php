@@ -35,7 +35,7 @@ class EntitySettingWithExtraProperties extends EntitySetting
      * The extra properties
      * @var array
      */
-    protected $extra;
+    private $extra;
 
     /**
      * Gets the specified extra property. 

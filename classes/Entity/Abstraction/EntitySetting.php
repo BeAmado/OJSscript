@@ -33,37 +33,37 @@ class EntitySetting implements Cloneable, ArrayRepresentation
      * The Entity id
      * @var integer
      */
-    protected $id;
+    private $id;
     
     /**
      * The type of the Entity. For example: article, user, section.
      * @var string
      */
-    protected $entityType;
+    private $entityType;
     
     /**
      * The setting locale
      * @var string
      */
-    protected $locale;
+    private $locale;
     
     /**
      * The setting name
      * @var string
      */
-    protected $name;
+    private $name;
     
     /**
      * The setting value
      * @var string
      */
-    protected $value;
+    private $value;
     
     /**
      * The setting type
      * @var string
      */
-    protected $type;
+    private $type;
     
     public function __construct($entityType) 
     {
