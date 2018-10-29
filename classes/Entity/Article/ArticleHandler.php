@@ -17,32 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OJSscript\Statement;
-use OJSscript\Core\Registry;
+namespace OJSscript\Entity\Article;
 
 /**
- * Description of StatementRegistry
+ * Description of ArticleHandler
  *
  * @author bernardo
  */
-class StatementRegistry extends Registry
+class ArticleHandler
 {
-    /**
-     * Gets the specified statement. Creates the statement if it was 
-     * not registered.
-     * @param string $statementName
-     * @return \OJSscript\Statement\Statement
-     */
-    public static function get($statementName)
-    {
-        $statement = null;
-        if (self::isRegistered($statementName)) {
-            $statement = self::$registry[$statementName];
-        } else {
-            $statement = StatementFactory::create($statementName);
-            self::set($statementName, $statement);
-        }
-        
-        return $statement;
-    }
+    //put your code here
 }

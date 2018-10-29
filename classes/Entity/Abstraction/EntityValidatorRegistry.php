@@ -33,7 +33,7 @@ class EntityValidatorRegistry extends Registry
      * @param EntityValidator $value
      * @return boolean
      */
-    public static function set($key, &$value)
+    public static function set($key, $value)
     {
         $validator = $value;
         $register = false;

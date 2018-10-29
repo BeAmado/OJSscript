@@ -43,7 +43,16 @@ class Registry
         return array_key_exists($key, self::$registry);
     }
     
-    public static function &get($key) 
+    public static function get($key)
+    {
+        $value = null;
+        if (self::isRegistered($key)) {
+            $value = self::$registry[$key];
+        }
+        return $value;
+    }
+    
+    public static function &getByReference($key) 
     {
         $value = null;
         if (self::isRegistered($key)) {
@@ -52,7 +61,12 @@ class Registry
         return $value;
     }
     
-    public static function set($key, &$value) 
+    public static function set($key, $value) 
+    {
+        self::$registry[$key] = $value;
+    }
+    
+    public static function setByReference($key, &$value) 
     {
         self::$registry[$key] =& $value;
     }

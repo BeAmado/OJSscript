@@ -243,16 +243,36 @@ class Entity implements Cloneable, ArrayRepresentation
     }
 
     /**
-     * Returns a new instance with the same properties.
+     * Returns a new instance with the same data.
      * 
      * @return Entity
      */
     public function cloneInstance()
     {
-        $clone = new Entity();
+        $clone = new Entity(
+            $this->tableName,
+            $this->hasSettings(),
+            $this->hasAssociatedEntities()
+        );
+        
         foreach ($this->properties as $propertyName => $propertyValue) {
             $clone->setProperty($propertyName, $propertyValue);
         }
+        
+        if ($this->hasSettings()) {
+            /* @var $setting EntitySetting */
+            foreach ($this->settings as $setting) {
+                $clone->addSetting($setting->cloneInstance());
+            }
+        }
+        
+        if ($this->hasAssociatedEntities()) {
+            /* @var $assocEntity Entity */
+            foreach ($this->associatedEntities as $assocEntity) {
+                $clone->addAssociatedEntity($assocEntity->cloneInstance());
+            }
+        }
+        
         return $clone;
     }
     

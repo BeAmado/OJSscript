@@ -35,22 +35,26 @@ class EntityDescription
     private $tableName;
     
     /**
+     * An array containing the names of the tables of the entities that might be 
+     * associated with an article.
+     * 
+     * @var array
+     */
+    private $associatedEntitiesNames;
+    
+    /**
      * Array of objects from the class PropertyDescription
      * @var array
      */
     private $propertiesDescriptions;
     
     /**
-     * Constructor of the class EntityDescription.
+     * Validates the tableName argument in the class constructor.
      * 
-     * @param string $tableName - The name of the table that the Entity 
-     * represents.
-     * 
-     * @return void
-     * 
+     * @param string $tableName
      * @throws \Exception
      */
-    public function __construct($tableName)
+    private function validateTableName($tableName)
     {
         if (!InputValidator::validate($tableName, 'string')) {
             $message = 'Constructor of the class EntityDescription:' . PHP_EOL
@@ -59,8 +63,53 @@ class EntityDescription
             
             throw new \Exception($message);
         }
+    }
+    
+    /**
+     * Validates the associatedEntitiesNames argument is an array of strings.
+     * 
+     * @param array $associatedEntitiesNames
+     * @throws \Exception
+     */
+    private function validateAssociatedEntitiesNames($associatedEntitiesNames)
+    {
+        if (!InputValidator::validate(
+                $associatedEntitiesNames, 
+                'arrayOfStrings')
+        ) {
+            $message = 'Constructor of the class EntityDescription:' . PHP_EOL
+                . 'The second argument "$associatedEntitiesNames" must be '
+                . 'either null or an array of strings.' . PHP_EOL;
+            
+            throw new \Exception($message);
+        }
+    }
+    
+    /**
+     * Constructor of the class EntityDescription.
+     * 
+     * @param string $tableName - The name of the table that the Entity 
+     * represents.
+     * 
+     * @param array $associatedEntitiesNames - The names of the tables Entities
+     * that might be associated with the Entity this object describes.
+     * 
+     * @return void
+     * 
+     * @throws \Exception
+     */
+    public function __construct($tableName, $associatedEntitiesNames = null)
+    {
+        $this->validateTableName($tableName);
         $this->tableName = $tableName;
         $this->propertiesDescriptions = array();
+        
+        if ($associatedEntitiesNames === null) {
+            $this->associatedEntitiesNames = array();
+        } else {
+            $this->validateAssociatedEntitiesNames($associatedEntitiesNames);
+            $this->associatedEntitiesNames = $associatedEntitiesNames;
+        }
     }
     
     /**

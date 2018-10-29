@@ -74,6 +74,21 @@ class InputValidator
     {
         return is_resource($data);
     }
+    
+    protected static function validateArrayOfStrings($data)
+    {
+        if (!self::validateArray($data)) {
+            return false;
+        }
+        
+        foreach ($data as $value) {
+            if (!self::validateString($value)) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
 
     /**
      * Validates the input data according to the specified type.
