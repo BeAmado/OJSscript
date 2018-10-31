@@ -72,7 +72,7 @@ class EntitySetting implements Cloneable, ArrayRepresentation
         } else {
             //TREAT BETTER
             $message = 'Invalid entity type "' . $entityType . '"';
-            throw new Exception($message);
+            throw new \Exception($message);
         }
     }
 

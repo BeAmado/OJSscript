@@ -21,7 +21,7 @@ namespace OJSscript\Statement;
 use OJSscript\Core\Registry;
 
 /**
- * Description of StatementRegistry
+ * Registry for Statement objects.
  *
  * @author bernardo
  */
@@ -30,16 +30,21 @@ class StatementRegistry extends Registry
     /**
      * Gets the specified statement. Creates the statement if it was 
      * not registered.
+     * 
      * @param string $statementName
      * @return \OJSscript\Statement\Statement
      */
     public static function get($statementName)
     {
+        /* @var $statement Statement */
         $statement = null;
         if (self::isRegistered($statementName)) {
             $statement = self::$registry[$statementName];
         } else {
-            $statement = StatementFactory::create($statementName);
+            $statement = StatementFactory::create(
+                array('name' => $statementName)
+            );
+            
             self::set($statementName, $statement);
         }
         

@@ -29,29 +29,41 @@ use OJSscript\Interfaces\ArrayRepresentation;
 class StatementParameter implements Cloneable, ArrayRepresentation
 {
     /**
-     * The Prepared Statement parameter's placeholder
+     * The Prepared Statement parameter's placeholder.
+     * 
      * @var string
      */
-    protected $placeholder;
+    private $placeholder;
     
     /**
      * The value bound to the Prepared Statement
+     * 
      * @var mixed
      */
-    protected $value;
+    private $value;
     
     /**
      * integer|string
      * @var string
      */
-    protected $type;
+    private $type;
     
     /**
      * The parameter's name
+     * 
      * @var string
      */
-    protected $name;
+    private $name;
     
+    /**
+     * StatementParameter constructor
+     * 
+     * @param string $name - The parameter's name.
+     * @param string $placeholder - The placeholder in the query, like for 
+     * example ":articleId"
+     * @param mixed $value - The parameter's value
+     * @param string $type - The type of the parameter
+     */
     public function __construct(
             $name, 
             $placeholder, 

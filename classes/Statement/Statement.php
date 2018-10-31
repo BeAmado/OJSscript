@@ -32,19 +32,19 @@ class Statement
      * an alias for the connection used
      * @var DatabaseConnection
      */
-    protected $connection;
+    private $connection;
     
     /**
      * The prepared statement to be executed
      * @var PDOStatement
      */
-    protected $stmt;
+    private $stmt;
     
     /**
      * Indicates whether the statement is prepared.
      * @var boolean
      */
-    protected $isPrepared;
+    private $isPrepared;
 
 
     /**
@@ -54,13 +54,22 @@ class Statement
      *              VALUES (:parameter1Name, :parameter2Name)'
      * @var string
      */
-    protected $query;
+    private $query;
     
     /**
      * Array of OJSscript\Statement\StatementParameter 
      * @var array
      */
-    protected $parameters;
+    private $parameters;
+    
+    /**
+     * The fetch style. 
+     * 
+     * Must be PDO::FETCH_ASSOC
+     * 
+     * @var integer|string
+     */
+    private $fetchStyle;
     
     /**
      * Initializes the parameters as an empty array indicates that 
@@ -70,6 +79,12 @@ class Statement
     {
         $this->parameters = array();
         $this->isPrepared = false;
+        
+        if (PDO::FETCH_ASSOC !== null) {
+            $this->fetchStyle = PDO::FETCH_ASSOC;
+        } else {
+            $this->fetchStyle = 2; //PDO::FETCH_ASSOC
+        }
     }
 
     /**
@@ -139,7 +154,8 @@ class Statement
     
     /**
      * Adds the parameter to the parameters array. Returns a boolean indicating
-     * whether or not the operation was successfull.
+     * whether or not the operation was successful.
+     * 
      * @param StatementParameter parameter
      * @return boolean
      */
@@ -195,7 +211,8 @@ class Statement
     }
     
     /**
-     * Sets the parameter value
+     * Sets the parameter value.
+     * 
      * @param string $name
      * @param mixed $value
      * @return boolean
@@ -205,7 +222,7 @@ class Statement
         if ($this->hasParameter($name)) {
             
             /* @var $parameter StatementParameter */
-            $parameter =& $this->parameters[$name];
+            $parameter = $this->parameters[$name];
             
             $parameter->setValue($value);
             
@@ -219,6 +236,7 @@ class Statement
     /**
      * Binds the value to the Prepared Statement parameter specified by the 
      * argument "$name".
+     * 
      * @param string $name
      * @param mixed $value
      * @return boolean
@@ -230,12 +248,9 @@ class Statement
         }
         
         /* @var $parameter StatementParameter */
-        $parameter =& $this->parameters[$name];
+        $parameter = $this->parameters[$name];
         
-        /* @var $stmt \PDOStatement */
-        $stmt =& $this->stmt;
-        
-        $bound = $stmt->bindParam($parameter->getPlaceholder(), $value);
+        $bound = $this->stmt->bindParam($parameter->getPlaceholder(), $value);
         
         if ($bound) {
             $parameter->setValue($value);
@@ -251,8 +266,26 @@ class Statement
      */
     public function execute()
     {
-        /* @var $stmt \PDOStatement */
-        $stmt =& $this->stmt;
-        return $stmt->execute();
+        return $this->stmt->execute();
+    }
+    
+    /**
+     * Returns all the result sets of the query.
+     * 
+     * @return array
+     */
+    public function fetchAll()
+    {
+        return $this->stmt->fetchAll($this->fetchStyle);
+    }
+    
+    /**
+     * Returns the next result set.
+     * 
+     * @return array
+     */
+    public function fetch()
+    {
+        return $this->stmt->fetch($this->fetchStyle);
     }
 }

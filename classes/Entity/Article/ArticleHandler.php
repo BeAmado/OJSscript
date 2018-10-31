@@ -18,6 +18,8 @@
  */
 
 namespace OJSscript\Entity\Article;
+use OJSscript\Statement\StatementHandler;
+//use OJSscript\Statement\StatementRegistry;
 
 /**
  * Description of ArticleHandler
@@ -26,5 +28,35 @@ namespace OJSscript\Entity\Article;
  */
 class ArticleHandler
 {
-    //put your code here
+    /**
+     * Fetches the articles of the specified journal
+     * 
+     * @param integer $journalId
+     * @return array - An array of Entity (articles)
+     */
+    public static function fetchArticles($journalId)
+    {
+        StatementHandler::bindSingleParam(
+            'SelectArticles',
+            'journal_id',
+            $journalId
+        );
+        
+        $articles = array();
+        
+        /* @var $arrArticle array */
+        while ($arrArticle = StatementHandler::fetchNext('SelectArticles')) {
+            $article = new Article();
+            $article->loadArray($arrArticle);
+            
+            //get the associated entities
+            //########################
+            ////////////////////////////
+            
+            $articles[] = $article;
+        }
+        
+        return $articles;
+        
+    }
 }

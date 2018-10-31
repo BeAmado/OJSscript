@@ -45,6 +45,25 @@ class StatementHandler
         
         return true;
     }
+    
+    /**
+     * Binds a single parameter to a statement.
+     * 
+     * @param string $statementName
+     * @param string $parameterName
+     * @param mixed $parameterValue
+     * @return boolean
+     */
+    public static function bindSingleParam(
+        $statementName,
+        $parameterName,
+        $parameterValue
+    ) {
+        /* @var $statement Statement */
+        $statement = StatementRegistry::get($statementName);
+        
+        return $statement->bindParameter($parameterName, $parameterValue);
+    }
 
 
     //FIXME: this method should probably throw Exception to give information
@@ -62,7 +81,7 @@ class StatementHandler
         }
         
         /* @var $statement Statement */
-        $statement =& StatementRegistry::get($statementName);
+        $statement = StatementRegistry::get($statementName);
         
         /* @var $parametersInfo array */
         $parameters = $statement->getParametersList();
@@ -73,7 +92,7 @@ class StatementHandler
         
         /* @var $parameter StatementParameter */
         foreach ($parameters as $parameter) {
-           
+           /* @var $bound boolean */
             $bound = $statement->bindParameter(
                 $parameter->getPlaceholder(), 
                 $entity->getProperty($parameter->getName())
@@ -88,19 +107,49 @@ class StatementHandler
     }
     
     /**
-     * Executes the prepared statement
+     * Executes the prepared statement.
+     * 
      * @param string $statementName
      * @return boolean
      */
     public static function execute($statementName)
     {
         /* @var $statement Statement */
-        $statement =& StatementRegistry::get($statementName);
+        $statement = StatementRegistry::get($statementName);
         
         if ($statement->isPrepared()) {
             return $statement->execute();
         }
         
         return false;
+    }
+    
+    /**
+     * Fetches all the records of the response of the database query.
+     * 
+     * @param string $statementName - The name of the statement.
+     * 
+     * @return array
+     */
+    public static function fetchRecords($statementName)
+    {
+        /* @var $statement Statement */
+        $statement = StatementRegistry::get($statementName);
+        
+        return $statement->fetchAll();
+    }
+    
+    /**
+     * Gets the next result set from the database query as an associative array.
+     * 
+     * @param string $statementName
+     * @return array
+     */
+    public static function fetchNext($statementName)
+    {
+        /* @var $statement Statement */
+        $statement = StatementRegistry::get($statementName);
+        
+        return $statement->fetch();
     }
 }
