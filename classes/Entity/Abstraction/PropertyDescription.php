@@ -33,40 +33,21 @@ class PropertyDescription
      * 
      * @var string
      */
-    protected $name;
+    private $name;
     
     /**
      * The type of the property.
      * 
      * @var string
      */
-    protected $type;
+    private $type;
     
     /**
      * Indicates whether the property might be null.
      * @var boolean
      */
-    protected $nullable;
+    private $nullable;
     
-    /**
-     * Indicates if the property is a primary key (PRI) or is a foreign key or 
-     * an index (MUL). An empty string indicates that the property is none of
-     * the aforementioned.
-     * @var string
-     */
-    protected $key;
-    
-    /**
-     * The default value of the property
-     * @var mixed
-     */
-    protected $default;
-    
-    /**
-     * The extra comments
-     * @var string
-     */
-    protected $extra;
     
     /**
      * The required constructor. All the values of the object must be set at
@@ -74,81 +55,57 @@ class PropertyDescription
      * @param string $name
      * @param string $type
      * @param boolean $nullable
-     * @param string $key
-     * @param mixed $default
-     * @param string $extra
      * @throws \Exception
      */
     public function __construct(
         $name,
         $type,
-        $nullable,
-        $key = '',
-        $default = null,
-        $extra = ''
+        $nullable
     ) {
         
-        $exceptionMessage = $this->validate('name', $name) 
-            . $this->validate('type', $type)
-            . $this->validate('nullable', $nullable)
-            . $this->validate('key', $key)
-            . $this->validate('default', $default)
-            . $this->validate('extra', $extra);
+        $this->validate('name', $name); 
+        $this->name = $name;
         
-        if ($exceptionMessage === '') {
-            $this->name = $name;
-            $this->type = $type;
-            $this->nullable = $nullable;
-            $this->key = $key;
-            $this->default = $default;
-            $this->extra = $extra;
-        } else {
-            throw new \Exception($exceptionMessage);
-        }
+        $this->validate('type', $type);
+        $this->type = $type;
+        
+        $this->validate('nullable', $nullable);
+        $this->nullable = $nullable;
         
     }
     
     /**
-     * Validates the instance properties.
-     * @param string $propertyName
-     * @param mixed $propertyValue
-     * @return string
+     * Validates the property type.
+     * 
+     * @param type $propertyName
+     * @param type $propertyValue
+     * @throws \Exception
      */
     protected function validate($propertyName, $propertyValue)
     {
-        $exceptionMessage = '';
         $propertyType = null;
         $valid = false;
-        switch ($propertyName) {
-            case 'name':
-            case 'type':
-            case 'key':
-            case 'extra':
-                $propertyType = 'string';
-                $valid = InputValidator::validate($propertyValue, 'string');
-                break;
-            
-            case 'nullable':
-                $propertyType = 'boolean';
-                $valid = InputValidator::validate($propertyValue, 'boolean');
-                break;
-            
-            case 'default':
-                $propertyType = 'null|string|integer|double';
-                $valid = ($propertyValue === null) || 
-                    InputValidator::validate($propertyValue, 'string') ||
-                    InputValidator::validate($propertyValue, 'integer') ||
-                    InputValidator::validate($propertyValue, 'double');
-                break;
-        }
         
-        if (!$valid) {
-            $exceptionMessage = 'The PropertyDescription property "' 
+        if (in_array($propertyName, array('name', 'type'))) {
+            
+            $propertyType = 'string';
+            $valid = InputValidator::validate($propertyValue, 'string');
+            
+        } else if ($propertyName == 'nullable') {
+            
+            $propertyType = 'boolean';
+            $valid = InputValidator::validate($propertyValue, 'boolean');
+            
+        } 
+        
+        $exceptionMessage = 'The PropertyDescription property "' 
                 . $propertyName . '" value "' . print_r($propertyValue, true)
                 . '" is not of type "' . $propertyType . '".' . PHP_EOL;
+        
+        if (!$valid) {
+            throw new \Exception($exceptionMessage);
         }
         
-        return $exceptionMessage;
     }
     
     /**
@@ -179,33 +136,5 @@ class PropertyDescription
     {
         return $this->nullable;
     }
-
-    /**
-     * 
-     * @return string
-     */
-    public function getKey()
-    {
-        return $this->key;
-    }
-
-    /**
-     * 
-     * @return mixed
-     */
-    public function getDefault()
-    {
-        return $this->default;
-    }
-
-    /**
-     * 
-     * @return string
-     */
-    public function getExtra()
-    {
-        return $this->extra;
-    }
-
 
 }

@@ -35,14 +35,6 @@ class EntityDescription
     private $tableName;
     
     /**
-     * An array containing the names of the tables of the entities that might be 
-     * associated with an article.
-     * 
-     * @var array
-     */
-    private $associatedEntitiesNames;
-    
-    /**
      * Array of objects from the class PropertyDescription
      * @var array
      */
@@ -66,26 +58,6 @@ class EntityDescription
     }
     
     /**
-     * Validates the associatedEntitiesNames argument is an array of strings.
-     * 
-     * @param array $associatedEntitiesNames
-     * @throws \Exception
-     */
-    private function validateAssociatedEntitiesNames($associatedEntitiesNames)
-    {
-        if (!InputValidator::validate(
-                $associatedEntitiesNames, 
-                'arrayOfStrings')
-        ) {
-            $message = 'Constructor of the class EntityDescription:' . PHP_EOL
-                . 'The second argument "$associatedEntitiesNames" must be '
-                . 'either null or an array of strings.' . PHP_EOL;
-            
-            throw new \Exception($message);
-        }
-    }
-    
-    /**
      * Constructor of the class EntityDescription.
      * 
      * @param string $tableName - The name of the table that the Entity 
@@ -98,18 +70,11 @@ class EntityDescription
      * 
      * @throws \Exception
      */
-    public function __construct($tableName, $associatedEntitiesNames = null)
+    public function __construct($tableName)
     {
         $this->validateTableName($tableName);
         $this->tableName = $tableName;
         $this->propertiesDescriptions = array();
-        
-        if ($associatedEntitiesNames === null) {
-            $this->associatedEntitiesNames = array();
-        } else {
-            $this->validateAssociatedEntitiesNames($associatedEntitiesNames);
-            $this->associatedEntitiesNames = $associatedEntitiesNames;
-        }
     }
     
     /**
