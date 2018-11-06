@@ -38,6 +38,7 @@ class InputValidator
         'array',
         'object',
         'resource',
+        'arrayOfString',
     );
     
     protected static function validateBoolean($data)
@@ -75,7 +76,7 @@ class InputValidator
         return is_resource($data);
     }
     
-    protected static function validateArrayOfStrings($data)
+    protected static function validateArrayOfString($data)
     {
         if (!self::validateArray($data)) {
             return false;

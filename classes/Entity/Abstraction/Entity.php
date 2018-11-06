@@ -20,6 +20,7 @@
 namespace OJSscript\Entity\Abstraction;
 use OJSscript\Interfaces\Cloneable;
 use OJSscript\Interfaces\ArrayRepresentation;
+use OJSscript\Interfaces\LoadFromArray;
 use OJSscript\Core\InputValidator;
 
 
@@ -29,7 +30,7 @@ use OJSscript\Core\InputValidator;
  *
  * @author bernardo
  */
-class Entity implements Cloneable, ArrayRepresentation
+class Entity implements Cloneable, ArrayRepresentation, LoadFromArray
 {
     /**
      * The name of the table that the Entity represents.
@@ -237,7 +238,7 @@ class Entity implements Cloneable, ArrayRepresentation
             return false;
             
         } else {
-            $this->associatedEntities[$entity->getTableName()] = $entity;
+            $this->associatedEntities[$entity->getTableName()][] = $entity;
             return true;
         }
     }
@@ -315,7 +316,7 @@ class Entity implements Cloneable, ArrayRepresentation
     {
         /* @var $associatedEntity Entity */
         foreach ($this->associatedEntities as $associatedEntity) {
-            $arrayToAppend[$associatedEntity->getTableName()] = 
+            $arrayToAppend[$associatedEntity->getTableName()][] = 
                 $associatedEntity->asArray();
         }
         
@@ -347,10 +348,75 @@ class Entity implements Cloneable, ArrayRepresentation
         }
         
         if ($this->hasAssociatedEntities()) {
-            $this->getAssociatedEntitiesAsArray($arrReturn);
+            $assocEntities = array();
+            $this->getAssociatedEntitiesAsArray($assocEntities);
+            $arrReturn['associatedEntities'] = $assocEntities;
         }
         
         return $arrReturn;
     }
     
+    /**
+     * 
+     * @param array $settingsArray
+     */
+    private function loadSettingsArray($settingsArray)
+    {
+        /* @var $arrSetting array*/
+        foreach ($settingsArray as $arrSetting) {
+            $setting = new EntitySetting(
+                $this->getEntityType(),
+                array_key_exists('extraProperties', $arrSetting)
+            );
+            
+            $setting->loadArray($arrSetting);
+            
+            $this->addSetting($setting);
+        }
+    }
+    
+    /**
+     * 
+     * @param array $assocEntititesArray
+     */
+    private function loadAssociatedEntititesArray($assocEntititesArray)
+    {
+        /* @var $tableName string */
+        /* @var $array array */
+        foreach ($assocEntititesArray as $tableName => $array) {
+            $entity = new Entity(
+                $tableName,
+                array_key_exists('settings', $array), 
+                array_key_exists('associatedEntities', $array)
+            );
+            
+            $entity->loadArray($array);
+            $this->addAssociatedEntity($entity);
+        }
+    }
+
+    /**
+     * 
+     * @param array $array
+     */
+    public function loadArray($array)
+    {
+        /* @var $entityDescription EntityDescription */
+        $entityDescription = EntityDescriptionRegistry::get(
+            $this->getTableName()
+        );
+        
+        /* @var $key string */
+        /* @var $value mixed */
+        foreach ($array as $key => $value) {
+            if ($entityDescription->propertyBelongs($key)) {
+                $this->setProperty($key, $value);
+            } elseif ($key === 'settings') {
+                $this->loadSettingsArray($value);
+            } elseif ($key === 'associatedEntities') {
+                $this->loadAssociatedEntititesArray($value);
+            }
+        }
+    }
+
 }

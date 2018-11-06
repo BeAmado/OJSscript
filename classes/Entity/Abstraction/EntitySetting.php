@@ -20,6 +20,7 @@
 namespace OJSscript\Entity\Abstraction;
 use OJSscript\Interfaces\ArrayRepresentation;
 use OJSscript\Interfaces\Cloneable;
+use OJSscript\Interfaces\LoadFromArray;
 use OJSscript\Core\InputValidator;
 
 /**
@@ -27,7 +28,7 @@ use OJSscript\Core\InputValidator;
  *
  * @author bernardo
  */
-class EntitySetting implements Cloneable, ArrayRepresentation
+class EntitySetting implements Cloneable, ArrayRepresentation, LoadFromArray
 {
     /**
      * The Entity id
@@ -65,13 +66,38 @@ class EntitySetting implements Cloneable, ArrayRepresentation
      */
     private $type;
     
-    public function __construct($entityType) 
+    /**
+     * The extra properties
+     * @var array
+     */
+    private $extra;
+
+    
+    
+    /**
+     * Constructor of EntitySetting.
+     * 
+     * @param string $entityType
+     * @param boolean $hasExtraProperties
+     * @throws \Exception
+     */
+    public function __construct($entityType, $hasExtraProperties = false) 
     {
         if (InputValidator::validate($entityType, 'string')) {
             $this->entityType = $entityType;
         } else {
             //TREAT BETTER
             $message = 'Invalid entity type "' . $entityType . '"';
+            throw new \Exception($message);
+        }
+        
+        if (InputValidator::validate($hasExtraProperties, 'boolean')) {
+            $this->extra = ($hasExtraProperties) ? array() : null;
+        } else {
+            //TREAT BETTER
+            $message = 'The 2nd argument for the EntitySetting constructor must '
+                . 'be a boolean. The given type was "' 
+                . gettype($hasExtraProperties) . '"';
             throw new \Exception($message);
         }
     }
@@ -180,7 +206,70 @@ class EntitySetting implements Cloneable, ArrayRepresentation
             return false;
         }
     }
+    
+    /**
+     * Gets the specified extra property. 
+     * If the property is not set returns false.
+     * @param string $propertyName
+     * @return mixed
+     */
+    public function getExtraProperty($propertyName)
+    {
+        if ($this->hasExtraProperty($propertyName)) {
+            return $this->extra[$propertyName];
+        } else {
+            return false;
+        }
+    }
 
+    /**
+     * Checks if the extra property is set.
+     * @param string $propertyName
+     * @return boolean
+     */
+    public function hasExtraProperty($propertyName)
+    {
+        if (!$this->hasExtraProperties()) {
+            return false;
+        }
+        
+        if (array_key_exists($propertyName, $this->extra)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Sets some extra property to the setting
+     * @param string $propertyName
+     * @param string $propertyValue
+     * @return boolean
+     */
+    public function setExtraProperty($propertyName, $propertyValue)
+    {
+        if (!$this->hasExtraProperties()) {
+            return false;
+        }
+        
+        if (InputValidator::validate($propertyName, 'string')) {
+            $this->extra[$propertyName] = $propertyValue;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Checks if the Entity has or must have extra properties.
+     * 
+     * @return boolean
+     */
+    public function hasExtraProperties()
+    {
+        return is_array($this->extra);
+    }
+    
     /**
      * Returns an array representation of the EntitySetting
      * @return array
@@ -196,6 +285,10 @@ class EntitySetting implements Cloneable, ArrayRepresentation
                      'setting_type' => $this->getType(),
         );
         
+        if ($this->hasExtraProperties()) {
+            $arrayRepresentation['extraProperties'] = $this->extra;
+        }
+        
         return $arrayRepresentation;
     }
 
@@ -207,15 +300,20 @@ class EntitySetting implements Cloneable, ArrayRepresentation
     {
         /* @var $instance EntitySetting */
         $instance = new EntitySetting(
-            $this->getId(),
-            $this->getLocale(),
-            $this->getName(),
-            $this->getValue(),
-            $this->getType()
+            $this->getEntityType(),
+            $this->hasExtraProperties()
         );
         
-        foreach ($this->extra as $propertyName => $propertyValue) {
-            $instance->setExtraProperty($propertyName, $propertyValue);
+        $instance->setId($this->getName());
+        $instance->setLocale($this->getLocale());
+        $instance->setName($this->getName());
+        $instance->setValue($this->getValue());
+        $instance->setType($this->getType());
+        
+        if ($this->hasExtraProperties()) {
+            foreach ($this->extra as $propertyName => $propertyValue) {
+                $instance->setExtraProperty($propertyName, $propertyValue);
+            }
         }
         
         return $instance;
@@ -228,6 +326,66 @@ class EntitySetting implements Cloneable, ArrayRepresentation
     public function __clone()
     {
         return $this->cloneInstance();
+    }
+    
+    /**
+     * 
+     * @param array $arrExtraProperties
+     */
+    private function setExtraProperties($arrExtraProperties)
+    {
+        if ($this->hasExtraProperties() && 
+            InputValidator::validate($arrExtraProperties, 'array')
+        ) {
+            $this->extra = $arrExtraProperties;
+        }
+    }
+    
+    /**
+     * 
+     * @param string $key
+     * @param mixed $value
+     */
+    private function setProperty($key, $value)
+    {
+        switch ($key) {
+            case 'locale':
+                $this->setLocale($value);
+                break;
+
+            case 'setting_name':
+                $this->setName($value);
+                break;
+
+            case 'setting_value':
+                $this->setValue($value);
+                break;
+
+            case 'setting_type':
+                $this->setType($value);
+                break;
+
+            case 'extraProperties':
+                $this->setExtraProperties($value);
+                break;
+
+            default:
+                $this->setId($value);
+                break;
+        }
+    }
+
+    /**
+     * 
+     * @param array $array
+     */
+    public function loadArray($array)
+    {
+        /* @var $key string */
+        /* @var $value mixed */
+        foreach ($array as $key => $value) {
+            $this->setProperty($key, $value);
+        }
     }
 
 }

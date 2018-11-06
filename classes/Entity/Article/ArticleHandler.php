@@ -19,6 +19,7 @@
 
 namespace OJSscript\Entity\Article;
 use OJSscript\Statement\StatementHandler;
+use OJSscript\Entity\Abstraction\Entity;
 //use OJSscript\Statement\StatementRegistry;
 
 /**
@@ -46,7 +47,7 @@ class ArticleHandler
         
         /* @var $arrArticle array */
         while ($arrArticle = StatementHandler::fetchNext('SelectArticles')) {
-            $article = new Article();
+            $article = new Entity('articles', true, true);
             $article->loadArray($arrArticle);
             
             //get the associated entities
