@@ -18,7 +18,8 @@
  */
 
 namespace OJSscript\Statement;
-use OJSscript\Entity\Entity;
+use OJSscript\Entity\Abstraction\Entity;
+use OJSscript\Entity\Abstraction\EntitySetting;
 
 /**
  * Description of StatementHandler
@@ -29,12 +30,13 @@ class StatementHandler
 {
     
     /**
-     * Tests if the data matches the parameters info
+     * Tests if the data matches the parameters.
+     * 
      * @param array $parameters
-     * @param OJSscript\Entity $entity
+     * @param Entity $entity
      * @return boolean
      */
-    private static function dataMatches($parameters, Entity $entity) 
+    private static function dataMatches($parameters, $entity) 
     {
         /* @var $parameter StatementParameter */
         foreach ($parameters as $parameter) {
@@ -64,29 +66,50 @@ class StatementHandler
         
         return $statement->bindParameter($parameterName, $parameterValue);
     }
-
-
-    //FIXME: this method should probably throw Exception to give information
-    // on what happened
+    
     /**
+     * Validates the parameters StatementParameter with the Entity or Entity setting.
      * 
-     * @param string $statementName
-     * @param Entity $entity
+     * @param Entity|EntitySetting $object
+     * @param array $parameters - array of StatementParameter
      * @return boolean
      */
-    public static function bindParams($statementName, $entity)
+    private static function validateObjectAndParameters($object, $parameters)
     {
-        if (!is_a($entity, 'Entity')) {
+        if (!is_a($object, '\OJSscript\Entity\Abstraction\Entity') &&
+            !is_a($object, '\OJSscript\Entity\Abstraction\EntitySetting')
+        ) {
             return false;
         }
         
+        if (is_a($object, '\OJSscript\Entity\Abstraction\Entity') &&
+            !self::dataMatches($parameters, $object)
+        ) {
+            return false;
+        }
+        
+        return true;
+    }
+    
+
+        //FIXME: this method should probably throw Exception to give information
+    // on what happened
+    /**
+     * Binds the object values to the specified statement.
+     * 
+     * @param string $statementName
+     * @param Entity|EntitySetting $object
+     * @return boolean
+     */
+    public static function bindParams($statementName, $object)
+    {
         /* @var $statement Statement */
         $statement = StatementRegistry::get($statementName);
         
-        /* @var $parametersInfo array */
+        /* @var $parameters array */
         $parameters = $statement->getParametersList();
         
-        if (!self::dataMatches($parameters, $entity)) {
+        if (!$this->validateObjectAndParameters($object, $parameters)) {
             return false;
         }
         
@@ -95,7 +118,7 @@ class StatementHandler
            /* @var $bound boolean */
             $bound = $statement->bindParameter(
                 $parameter->getPlaceholder(), 
-                $entity->getProperty($parameter->getName())
+                $object->getProperty($parameter->getName())
             );
                     
             if (!$bound) {

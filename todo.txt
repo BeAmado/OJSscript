@@ -1,1 +1,2 @@
-Improve the statement handler to bind the parameters of EntitySettings as well
+Create the methods to import and export the data. The infrastructure 
+of most of the needs is done.

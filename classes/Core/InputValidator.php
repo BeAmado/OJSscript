@@ -92,20 +92,40 @@ class InputValidator
     }
 
     /**
-     * Validates the input data according to the specified type.
-     * @param mixed $data
-     * @param string $type
+     * Validates the input data according to the specified type. 
+     * 
+     * If more than one type is to be accepted their values must be 
+     * separated by "|". 
+     * For example: "integer|string" or "boolean|integer|double".
+     * 
+     * @param mixed $data - The data to be validated.
+     * @param string $type - The type the data must be.
+     *  
      * @return boolean
+     * 
+     * @throws \Exception
      */
     public static function validate($data, $type)
     {
-        if (!in_array($type, self::$validTypes)) {
-            return false;
+        
+        /* @var $chosenTypes array */
+        $chosenTypes = explode('|', $type);
+        
+        /* @var $chosenType string */
+        foreach ($chosenTypes as $chosenType) {
+            if (!in_array($chosenType, self::$validTypes)) {
+                throw new \Exception('The type "' . $chosenType . '" is not '
+                    . 'one of the valid types.');
+            }
+
+            /* @var $method string */
+            $method = 'validate' . ucfirst($type);
+            
+            if (self::$method($data)) {
+                return true;
+            }
         }
         
-        /* @var $method string */
-        $method = 'validate' . ucfirst($type);
-        
-        return self::$method($data);
+        return false;
     }
 }

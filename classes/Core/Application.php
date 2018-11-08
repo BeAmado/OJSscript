@@ -30,6 +30,8 @@ class Application
     protected function begin()
     {
         echo 'Application begin' . PHP_EOL;
+        //get the OJS version
+        //use the SchemaHandler to form the EntityDescription objects.
     }
     
     protected function end()
