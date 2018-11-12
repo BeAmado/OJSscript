@@ -18,6 +18,9 @@
  */
 
 namespace OJSscript\Core;
+use OJSscript\UI\Inquirer;
+use OJSscript\Core\SchemaHandler;
+use OJSscript\Entity\Abstraction\EntityDescriptionRegistry;
 
 /**
  * Description of Application
@@ -26,24 +29,52 @@ namespace OJSscript\Core;
  */
 class Application
 {
+    /**
+     * The version of the OJS upon which the program is running.
+     * 
+     * @var string 
+     */
+    private $ojsVersion;
+    
+    /**
+     * The application inquirer, which will ask the user for input and will
+     * return its response.
+     * 
+     * @var Inquirer
+     */
+    private $inquirer;
+    
+    public function __construct()
+    {
+        $this->inquirer = new Inquirer();
+        $this->ojsVersion = '2.4.8-2';
+    }
     
     protected function begin()
     {
         echo 'Application begin' . PHP_EOL;
-        //get the OJS version
+        
         //use the SchemaHandler to form the EntityDescription objects.
+        $schemaHandler = new SchemaHandler();
+        $schemaHandler->registerEntitiesDescriptions();
     }
     
     protected function end()
     {
         echo 'Application end' . PHP_EOL;
+        
+        
     }
 
     public function run($args = array())
     {
         $this->begin();
         
-        //middle processing
+        echo 'The entities descriptions: ' . PHP_EOL;
+        /* @var $articleDescription EntityDescription */
+        $articlesDescription = EntityDescriptionRegistry::get('articles');
+        echo 'articles:' . PHP_EOL;
+        print_r($articlesDescription);
         
         $this->end();
         

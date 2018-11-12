@@ -65,7 +65,7 @@ class SchemaHandler
     private function setDbscriptDir($dbscriptsDir = null)
     {
         if ($dbscriptsDir === null) {
-            $this->dbscriptsDir = \OJSscript\BASE_DIR 
+            $this->dbscriptsDir = BASE_DIR 
                 . '/xml_schema/ojs2/dbscripts';
         } else {
             $this->dbscriptsDir = $dbscriptsDir;
@@ -80,7 +80,7 @@ class SchemaHandler
     private function setSchemaDir($schemaDir = null)
     {
         if ($schemaDir === null) {
-            $this->schemaDir = \OJSscript\BASE_DIR  . 'xml_schema/ojs2/schema';
+            $this->schemaDir = BASE_DIR  . '/xml_schema/ojs2/schema';
         } else {
             $this->schemaDir = $schemaDir;
         }
