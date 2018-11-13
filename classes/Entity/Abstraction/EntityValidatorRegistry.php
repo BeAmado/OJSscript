@@ -17,17 +17,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OJSscript\Interfaces;
+namespace OJSscript\Entity\Abstraction;
+use OJSscript\Core\Registry;
 
 /**
- * implement cloning functionality
+ * Description of EntityValidatorRegistry
+ *
  * @author bernardo
  */
-interface Cloneable
+class EntityValidatorRegistry extends Registry
 {
-    /**
-     * Returns a new instance of the object with the same properties.
-     * @return \Object
-     */
-    function cloneInstance();
+    public static function get($key)
+    {
+        //parent::get($key);
+        if (!self::isRegistered($key)) {
+            
+        }
+    }
 }

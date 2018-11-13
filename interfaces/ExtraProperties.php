@@ -25,11 +25,11 @@ namespace OJSscript\Interfaces;
  */
 interface ExtraProperties
 {
-    public abstract function hasExtraProperty($propertyName);
+    function hasExtraProperty($propertyName);
     
-    public abstract function getExtraProperty($propertyName);
+    function getExtraProperty($propertyName);
     
-    public abstract function setExtraProperty($propertyName);
+    function setExtraProperty($propertyName);
     
     //public abstract function listExtraProperties();
 }

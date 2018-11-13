@@ -19,6 +19,8 @@
 
 namespace OJSscript\Entity\Abstraction;
 use OJSscript\Core\InputValidator;
+use OJSscript\Entity\Abstraction\PropertyDescription;
+use OJSscript\Entity\Abstraction\EntityDescriptionRegistry;
 
 /**
  * Description of EntityValidator
@@ -58,177 +60,34 @@ class EntityValidator
      * @param string $tableName - The name of the table that the entity 
      * represents.
      * 
-     * @param array $propertiesDescriptions - The description of the entity's 
-     * properties.
+     * @param array $allowedAssocEntities - The names of the entities that 
+     * might be associated with this one.
      */
-    public function __construct($tableName, $propertiesDescriptions = null)
+    public function __construct($tableName, $allowedAssocEntities = array())
     {
         $this->tableName = $tableName;
-        $this->propertiesDescriptions = $propertiesDescriptions;
+        $this->propertiesDescriptions = 
+            EntityDescriptionRegistry::get($tableName);
+        $this->allowedAssociatedEntities = $allowedAssocEntities;
     }
     
     /**
-     * Returns the specified property description.
      * 
      * @param string $propertyName
-     * @return mixed
+     * @param string|integer $propertyValue
      */
-    private function getPropertyDescription($propertyName)
+    public function validateProperty($propertyName, $propertyValue)
     {
-        /* @var $propertyDescription PropertyDescription */
-        foreach ($this->propertiesDescriptions as $propertyDescription) {
-            if ($propertyDescription->getName() === $propertyName) {
-                return $propertyDescription;
-            }
-        }
-        
-        return false;
-    }
-    
-    /**
-     * 
-     */
-    private function getPropertiesNames()
-    {
-        
-    }
-    
-    /**
-     * 
-     * @param string $type
-     * @param mixed $value
-     * @return array  
-     */
-    private function validateVarchar($type, &$value)
-    {
-        /* @var $isValid boolean */
-        $isValid = true;
-        
-        /* @var $message string */
         $message = '';
+        $valid = true;
         
-        if (!InputValidator::validate($value, 'string')) {
-            $isValid = false;
-            $message .= 'The property value must be of type "string".' 
-                . PHP_EOL;
-        }
-
-        $openParens = strpos($type, '(');
-        $closeParens = strpos($type, ')');
-        $digits = $closeParens - $openParens - 1;
-        $size = (int) substr($type, $openParens + 1, $digits);
-
-        if (strlen($value) > $size) {
-            $propertyValue = substr($propertyValue, 0, $size);
+        if (!in_array($propertyName, array_keys($this->propertiesDescriptions))) {
+            $valid = false;
+            $message = 'The property "' . $propertyName . '" is not declared '
+                . 'in the OJS schema.';
         }
         
-        return array('isValid' => $isValid, 'message' => $message);
-    }
-    
-    /**
-     * 
-     * @param string $type
-     * @param mixed $value
-     * @return array
-     */
-    private function validateInteger($type, &$value)
-    {
-        /* @var $isValid boolean */
-        $isValid = true;
-        
-        /* @var $message string */
-        $message = '';
-        
-        $openParens = strpos($type, '(');
-        $closeParens = strpos($type, ')');
-        /* @var $digits int */
-        $digits = $closeParens - $openParens - 1;
-        
-        /* @var $maxSize int */
-        $maxSize = (int) substr($type, $openParens + 1, $digits);
-        
-        /* @var $actualSize int */
-        $actualSize = strlen("$value");
-        
-        if ($actualSize > $maxSize) {
-            $isValid = false;
-            $message .= "The number is too big. Its has $actualSize digits "
-                . "while it must have at most $maxSize." . PHP_EOL;
-        } elseif (is_string($value) && !is_numeric($value)) {
-            $isValid = false;
-            $message .= 'The value "' . $value . '" is NOT a numeric string.'
-                . PHP_EOL;
-        } elseif (!InputValidator::validate($value, 'integer')) {
-            $isValid = false;
-            $message .= 'The value "' . $value . '" is NOT a valid integer.'
-                . PHP_EOL;
-        }
-        
-        return array('isValid' => $isValid, 'message' => $message);
-    }
-    
-    /**
-     * 
-     * @param string $propertyName The name of the property to be validated.
-     * @param mixed $propertyValue The value of the property to be validated.
-     * 
-     * @return array The entries of the array are: 
-     * 'isValid' -> boolean value indicating if the property value is valid.
-     * 'message' -> a message indicating what went wrong if not valid.
-     *
-     */
-    public function validateProperty($propertyName, &$propertyValue)
-    {
-        /* @var $isValid boolean */
-        $isValid = true;
-        
-        /* @var $message string */
-        $message = 'Property name: "' . $propertyName . '"';
-        
-        if (!InputValidator::validate($propertyName, 'string')) {
-            $isValid = false;
-            $message .= 'The property\'s name must be a string.' . PHP_EOL;
-        }
-        
-        /* @var $propertyDescription PropertyDescription */
-        $propertyDescription = $this->getPropertyDescription($propertyName);
-        
-        if (!$propertyDescription->getNullable() && ($propertyValue === null)) {
-            $isValid = false;
-            $message .= 'The property must not be null.' . PHP_EOL;
-        }
-        
-        /* @var $type string */
-        $type = $propertyDescription->getType();
-        
-        /* @var $validationMethod string */
-        $validationMethod = null;
-        
-        if (strpos($type, 'varchar') !== false) {
-            $validationMethod = 'validateVarchar';
-        } elseif (strpos($type, 'int') !== false) {
-            $validationMethod = 'validateInteger';
-        } 
-        
-        /* @var $result array */
-        $result = $this->$validationMethod($type, $propertyValue);
-        if (!$result['isValid']) {
-            $isValid = false;
-        }
-        $message .= $result['message'];
-        
-        return array('isValid' => $isValid, 'message' => $message);
-        
-    }
-    
-    /**
-     * Returns an array with the names of the entities that are allowed.
-     * 
-     * @return array
-     */
-    public function getAllowedAssociatedEntitiesNames()
-    {
-        return $this->allowedAssociatedEntities;
+        return array('valid' => $valid, 'message' => $message);
     }
     
     /**
@@ -242,10 +101,16 @@ class EntityValidator
      */
     public function validateEntity($entity)
     {
-        if (!is_a($entity, '\OJSscript\Entity\Abstraction\Entity') ||
+        /*if (!is_a($entity, '\OJSscript\Entity\Abstraction\Entity') ||
             $this->tableName !== $entity->getTableName()) {
-            return false;
-        }
+            $message = 'The entity\'s name "' . $entity->getTableName() 
+                . '" does not math with the validator\'s "' . $this->tableName 
+                . '".';
+            return array(
+                'isValid' => false,
+                'message' => $message,
+            );
+        }*/
         
         /*@var $message string */
         $message = '';
@@ -287,34 +152,31 @@ class EntityValidator
         $message = '';
         
         /* @var $isValid boolean */
-        $isValid = true;
+        $valid = true;
         
-        /* @var $propertiesNames array */
-        $propertiesNames = array();
-        
-        /*@var $propertyDescription PropertyDescription */
+        /* @var $propertyDescription PropertyDescription */
         foreach ($this->propertiesDescriptions as $propertyDescription) {
-            
-            $propertiesNames[] = $propertyDescription->getName();
-            
-            if (array_key_exists($propertyDescription->getName(), $array)) {
-                
-            } else if (!$propertyDescription->getNullable()){
-                $message .= 'The property "' . $propertyDescription . '", '
-                    . 'which cannot be null, is missing.' . PHP_EOL;
-                $isValid = false;
-            }
-        }
-        
-        foreach ($array as $key => $value) {
-            if (!in_array($key, $propertiesNames) && 
-                !in_array($key, $this->allowedAssociatedEntities)
+            if (!$propertyDescription->getNullable() &&
+                !in_array($propertyDescription->getName(), $array)
             ) {
-                $isValid = false;
-                $message .= 'The key "' . $key . '" is invalid.' . PHP_EOL;
+                $message .= 'The property "' . $propertyDescription->getName()
+                    . '" which must NOT be null is missing.';
+                
+                $valid = false;
             }
         }
         
-        return array('isValid' => $isValid, 'message' => $message);
+        /* @var $key string */
+        /* @var $value mixed */
+        foreach ($array as $key => $value) {
+            /* @var $validation array */
+            $validation = $this->validateProperty($key, $value);
+            if (!$validation['valid']) {
+                $valid = false;
+                $message .= $validation['message'] . PHP_EOL;
+            }
+        }
+        
+        return array('valid' => $valid, 'message' => $message);
     }
 }

@@ -29,5 +29,5 @@ interface ArrayRepresentation
      * Returns an array representation of the object
      * @return array
      */
-    public abstract function asArray();
+    function asArray();
 }

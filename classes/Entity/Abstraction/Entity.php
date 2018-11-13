@@ -187,17 +187,20 @@ class Entity implements Cloneable, ArrayRepresentation, LoadFromArray
         $propertyValue
     ) {
         /* @var $validator EntityValidator */
-        $validator = EntityValidatorRegistry::get($this->getTableName());
+        //$validator = EntityValidatorRegistry::get($this->getTableName());
         
         /* @var $result array */
-        $result = $validator->validateProperty($propertyName, $propertyValue);
+       // $result = $validator->validateProperty($propertyName, $propertyValue);
         
-        if ($result['isValid']) {
-            $this->properties[$propertyName] = $propertyValue;
-            return true;
-        } else {
-            return false;
-        }
+//        if ($result['isValid']) {
+//            $this->properties[$propertyName] = $propertyValue;
+//            return true;
+//        } else {
+//            return false;
+//        }
+        
+        $this->properties[$propertyName] = $propertyValue;
+        return true;
     }
     
     /**

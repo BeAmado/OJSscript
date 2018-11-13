@@ -17,17 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OJSscript\Interfaces;
+namespace OJSscript\Entity\Abstraction;
 
 /**
- * implement cloning functionality
+ * Description of EntityHandler
+ *
  * @author bernardo
  */
-interface Cloneable
+abstract class EntityHandler
 {
-    /**
-     * Returns a new instance of the object with the same properties.
-     * @return \Object
-     */
-    function cloneInstance();
+    abstract public function fetch();
 }

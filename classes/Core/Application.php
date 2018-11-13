@@ -18,8 +18,11 @@
  */
 
 namespace OJSscript\Core;
+use OJSscript\Core\Registry;
 use OJSscript\UI\Inquirer;
+use OJSscript\UI\Menu;
 use OJSscript\Core\SchemaHandler;
+use OJSscript\Entity\Journal\JournalHandler;
 use OJSscript\Entity\Abstraction\EntityDescriptionRegistry;
 
 /**
@@ -44,19 +47,78 @@ class Application
      */
     private $inquirer;
     
+    /**
+     *
+     * @var Menu
+     */
+    private $menu;
+    
+    /**
+     * The names of the tables that will be used.
+     * 
+     * @var array
+     */
+    private $tablesToUse;
+    
     public function __construct()
     {
         $this->inquirer = new Inquirer();
+        $this->menu = new Menu($this->inquirer);
         $this->ojsVersion = '2.4.8-2';
+        $this->tablesToUse = array();
+    }
+    
+    protected function showDescriptions()
+    {
+        echo 'The entities descriptions: ' . PHP_EOL;
+        
+        $descriptions = array();
+        
+        $descriptions[] = EntityDescriptionRegistry::get('articles');
+        $descriptions[] = EntityDescriptionRegistry::get('article_settings');
+        $descriptions[] = EntityDescriptionRegistry::get('users');
+        $descriptions[] = EntityDescriptionRegistry::get('sections');
+        $descriptions[] = EntityDescriptionRegistry::get('review_assignments');
+        
+        /* @var $entityDescription \OJSscript\Entity\Abstraction\EntityDescription */
+        foreach ($descriptions as $entityDescription) {
+            /* @var $properties array */
+            $properties = $entityDescription->getPropertiesDecriptions();
+            echo PHP_EOL . $entityDescription->getName() . ':' . PHP_EOL;
+
+            /* @var $propertyDescription \OJSscript\Entity\Abstraction\PropertyDescription */
+            foreach ($properties as $propertyDescription) {
+                echo '    ' . $propertyDescription->getName() . ': ';
+                echo $propertyDescription->getType() . '  ';
+                echo ($propertyDescription->getNullable()) ? '': 'NOT NULL';
+                echo PHP_EOL;
+            }
+        }
+        
+    }
+    
+    protected function fetchData()
+    {
+        
     }
     
     protected function begin()
     {
         echo 'Application begin' . PHP_EOL;
         
+        $this->tablesToUse[] = 'articles';
+        $this->tablesToUse[] = 'journals';
+        
         //use the SchemaHandler to form the EntityDescription objects.
-        $schemaHandler = new SchemaHandler();
+        $schemaHandler = new SchemaHandler($this->tablesToUse);
         $schemaHandler->registerEntitiesDescriptions();
+        
+        /* @var $journalHandler JournalHandler */
+        $journalHandler = new JournalHandler();
+        Registry::set('journalHandler', $journalHandler);
+        
+        
+        
     }
     
     protected function end()
@@ -70,11 +132,10 @@ class Application
     {
         $this->begin();
         
-        echo 'The entities descriptions: ' . PHP_EOL;
-        /* @var $articleDescription EntityDescription */
-        $articlesDescription = EntityDescriptionRegistry::get('articles');
-        echo 'articles:' . PHP_EOL;
-        print_r($articlesDescription);
+        /* @var $journalId integer */
+        $journalId = $this->menu->chooseJournal();
+        
+        echo PHP_EOL . 'The journal_id chosen was "' . $journalId . '".';
         
         $this->end();
         

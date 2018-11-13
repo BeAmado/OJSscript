@@ -58,6 +58,13 @@ class SchemaHandler
     private $typeMapping;
     
     /**
+     * The names of the tables that will be used.
+     * 
+     * @var array
+     */
+    private $tablesToBeUsed;
+    
+    /**
      * Sets the path to the directory dbscript.
      * 
      * @param string $dbscriptsDir
@@ -128,13 +135,17 @@ class SchemaHandler
     /**
      * Constructor of the class SchemaHandler.
      * 
+     * @param array $tablesToBeUsed
      * @param string $schemaDir - The absolute path of the schema directory.
      * @param string $dbscriptsDir - The absolute path of the dbscripts 
      * directory.
      */
-    public function __construct($schemaDir = null, $dbscriptsDir = null)
-    {
-        
+    public function __construct(
+        $tablesToBeUsed = array(),
+        $schemaDir = null,
+        $dbscriptsDir = null
+    ) {
+        $this->tablesToBeUsed = $tablesToBeUsed;
         $this->setSchemaDir($schemaDir);
         $this->setDbscriptDir($dbscriptsDir);
         
@@ -149,6 +160,7 @@ class SchemaHandler
             'I8' => 'bigint(20)',
             'F' => 'double',
             'C' => 'varchar',
+            'D' => 'date',
             'T' => 'datetime',
             'X' => 'text',
         );
@@ -237,7 +249,9 @@ class SchemaHandler
         
         /* @var $table \DOMElement */
         foreach ($tables as $table) {
-            $this->makeAndRegisterEntityDescription($table);
+            if (in_array($table->getAttribute('name'), $this->tablesToBeUsed)) {
+                $this->makeAndRegisterEntityDescription($table);
+            }
         }
     }
     

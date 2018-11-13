@@ -1,2 +1,3 @@
-Create the methods to import and export the data. The infrastructure 
-of most of the needs is done.
+Infrastructure: The entity validations yet to be well defined.
+
+Execution: Create the methods to import and export the data. 

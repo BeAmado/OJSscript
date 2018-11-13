@@ -25,5 +25,5 @@ namespace OJSscript\Interfaces;
  */
 interface LoadFromArray
 {
-    public abstract function loadArray($array);
+    function loadArray($array);
 }

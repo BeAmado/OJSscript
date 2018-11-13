@@ -108,7 +108,7 @@ class StatementLocator
         }
         
         $fullpath = BASE_DIR . '/queries/' . $operationDir . '/' . $entityDir
-            . $filename . '.php';
+            . '/' . $filename . '.php';
         
         return $fullpath;
     }
@@ -125,6 +125,9 @@ class StatementLocator
         
         /* @var $link string */
         $link = self::getLink($statementName);
+        
+//        echo PHP_EOL . 'The statement name is "' . $statementName . '".';
+//        echo PHP_EOL . 'The link is "' . $link . '".' . PHP_EOL;
         
         /* @var $arrLocation array */
         $arrLocation = include $link;
@@ -150,6 +153,8 @@ class StatementLocator
         $path = '';
         
         $fullpath = self::formFullPath($statementName);
+        
+        //echo PHP_EOL . 'The fullpath is ' . $fullpath . PHP_EOL;
         
         if (is_file($fullpath)) {
             $path = $fullpath;

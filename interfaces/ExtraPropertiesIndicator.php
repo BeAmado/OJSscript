@@ -25,5 +25,5 @@ namespace OJSscript\Interfaces;
  */
 interface ExtraPropertiesIndicator
 {
-    public abstract function hasExtraProperties();
+    function hasExtraProperties();
 }

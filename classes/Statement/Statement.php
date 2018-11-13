@@ -36,7 +36,7 @@ class Statement
     
     /**
      * The prepared statement to be executed
-     * @var PDOStatement
+     * @var \PDO
      */
     private $stmt;
     
@@ -65,7 +65,7 @@ class Statement
     /**
      * The fetch style. 
      * 
-     * Must be PDO::FETCH_ASSOC
+     * Must be \PDO::FETCH_ASSOC
      * 
      * @var integer|string
      */
@@ -80,8 +80,8 @@ class Statement
         $this->parameters = array();
         $this->isPrepared = false;
         
-        if (PDO::FETCH_ASSOC !== null) {
-            $this->fetchStyle = PDO::FETCH_ASSOC;
+        if (\PDO::FETCH_ASSOC !== null) {
+            $this->fetchStyle = \PDO::FETCH_ASSOC;
         } else {
             $this->fetchStyle = 2; //PDO::FETCH_ASSOC
         }

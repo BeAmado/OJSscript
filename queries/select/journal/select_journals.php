@@ -1,6 +1,6 @@
 <?php
 
-/*
+/* 
  * Copyright (C) 2018 bernardo
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,17 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OJSscript\Interfaces;
-
-/**
- * implement cloning functionality
- * @author bernardo
- */
-interface Cloneable
-{
-    /**
-     * Returns a new instance of the object with the same properties.
-     * @return \Object
-     */
-    function cloneInstance();
-}
+return array(
+    'name' => 'SelectJournals',
+    
+    'query' => 'SELECT * FROM journals',
+    
+    'params' => array(),
+);

@@ -20,6 +20,7 @@
 namespace OJSscript\Entity\Article;
 use OJSscript\Statement\StatementHandler;
 use OJSscript\Entity\Abstraction\Entity;
+use OJSscript\Entity\Abstraction\EntityHandler;
 //use OJSscript\Statement\StatementRegistry;
 
 /**
@@ -27,21 +28,62 @@ use OJSscript\Entity\Abstraction\Entity;
  *
  * @author bernardo
  */
-class ArticleHandler
+class ArticleHandler extends EntityHandler
 {
     /**
-     * Fetches the articles of the specified journal
+     *
+     * @var integer
+     */
+    private $journalId;
+    
+    /**
+     * 
+     * @return integer
+     */
+    public function getJournalId()
+    {
+        return $this->journalId;
+    }
+
+    /**
      * 
      * @param integer $journalId
+     */
+    public function setJournalId($journalId)
+    {
+        $this->journalId = $journalId;
+    }
+
+        
+    /**
+     * 
+     * @param integer $journalId
+     */
+    public function __construct($journalId)
+    {
+        $this->setJournalId($journalId);
+    }
+    
+    /**
+     * Fetches the articles of the journal
+     * 
      * @return array - An array of Entity (articles)
      */
-    public static function fetchArticles($journalId)
+    public function fetch()
     {
         StatementHandler::bindSingleParam(
             'SelectArticles',
             'journal_id',
-            $journalId
+            $this->getJournalId()
         );
+        
+        /* @var $executed boolean */
+        $executed = StatementHandler::execute('SelectArticles');
+        
+        if (!$executed) {
+            //THROW EXCEPTION
+            return false;
+        }
         
         $articles = array();
         
@@ -58,6 +100,6 @@ class ArticleHandler
         }
         
         return $articles;
-        
     }
+
 }
