@@ -27,6 +27,12 @@ use OJSscript\Database\DatabaseConnection;
  */
 class Statement 
 {
+    /**
+     * A name that identifies the Statement
+     * 
+     * @var string
+     */
+    private $name;
     
     /**
      * an alias for the connection used
@@ -74,9 +80,12 @@ class Statement
     /**
      * Initializes the parameters as an empty array indicates that 
      * the Statement is not prepared.
+     * 
+     * @param string $statementName The name of the statement.
      */
-    public function __construct()
+    public function __construct($statementName)
     {
+        $this->name = $statementName;
         $this->parameters = array();
         $this->isPrepared = false;
         
@@ -85,6 +94,16 @@ class Statement
         } else {
             $this->fetchStyle = 2; //PDO::FETCH_ASSOC
         }
+    }
+    
+    /**
+     * Gets the name that identifies the statement.
+     * 
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 
     /**
@@ -158,6 +177,8 @@ class Statement
      * 
      * @param StatementParameter parameter
      * @return boolean
+     * 
+     * @throws \Exception
      */
     public function addParameter($parameter) 
     {
@@ -167,14 +188,12 @@ class Statement
          * but in PHP 5 would generate a Fatal Error. 
          */
         if (!is_a($parameter, '\OJSscript\Statement\StatementParameter')) {
-            /*
-             * FIXME: Would be better to throw an exception
-             */
-            return false;
+            throw new \Exception('The parameter being added to the Statement '
+                . 'must be an instance of '
+                . '\OJSscript\Statement\StatementParameter.');
         }
         
         /* @var $parameter StatementParameter */
-        
         $this->parameters[$parameter->getName()] = $parameter;
         return true;
     }
@@ -261,12 +280,42 @@ class Statement
     }
     
     /**
-     * Executes the prepared statement
-     * @return boolean
+     * Returns a string with the information about the parameters indicating 
+     * their name, placeholder and value.
+     * 
+     * @return string
+     */
+    private function formParametersString()
+    {
+        $parametersString = '';
+        /* @var $parameter StatementParameter */
+        foreach ($this->parameters as $parameter) {
+            $parametersString .= 'name: ' . $parameter->getName() . PHP_EOL
+                . 'placeholder: ' . $parameter->getPlaceholder() . PHP_EOL
+                . 'value: ' . $parameter->getValue() . PHP_EOL . PHP_EOL;
+        }
+        
+        return $parametersString;
+    }
+    
+    /**
+     * Executes the prepared statement.
+     * 
+     * @throws \Exception
      */
     public function execute()
     {
-        return $this->stmt->execute();
+        /* @var $executed boolean */
+        $executed = $this->stmt->execute();
+        
+        if (!$executed) {
+            $message = 'Did not execute the prepared statement "' . $this->name
+                . '".' . PHP_EOL
+                . 'The following parameters were bound:' . PHP_EOL
+                . $this->formParametersString();
+            
+            throw new \Exception($message);
+        }
     }
     
     /**

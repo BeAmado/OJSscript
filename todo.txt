@@ -1,3 +1,14 @@
-Infrastructure: The entity validations yet to be well defined.
+Infrastructure: 
+1 - The entity validations yet to be well defined.
 
-Execution: Create the methods to import and export the data. 
+2 - Create the functionalities to map the data.
+
+3 - Implement a method to bind parameters that are mapped from the old instance
+to the new one.
+
+4- Create flags that indicate if a StatementParameter is bound
+
+Execution: 
+1 - Create the methods to import and export the data.
+
+***Create internationalization***

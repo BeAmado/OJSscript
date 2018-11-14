@@ -48,7 +48,7 @@ class Menu
      * @param string $message
      * @return string
      */
-    private function askForInput($message = 'Enter the desired option')
+    private function askForInput($message = 'Enter the desired option: ')
     {
         return $this->inquirer->inquire($message);
     }
@@ -92,8 +92,11 @@ class Menu
      * @param string $optionsTitle
      * @param integer $indentationSize
      */
-    private function showOptions($options, $optionsTitle = null, $indentationSize = 0)
-    {
+    private function showOptions(
+        $options,
+        $optionsTitle = null,
+        $indentationSize = 0
+    ) {
         
         if ($optionsTitle !== null) {
             echo PHP_EOL . '------ ' . $optionsTitle . ' ------' . PHP_EOL;
@@ -139,7 +142,7 @@ class Menu
     public function chooseJournal()
     {
         /* @var $journals array */
-        $journals = Registry::get('journalHandler')->fetch();
+        $journals = Registry::get('JournalHandler')->fetchAll();
         
         /* @var $options array */
         $options = array();
@@ -156,7 +159,8 @@ class Menu
 	$index = $this->askForInput('Select one journal: ');
         
         while (!$this->confirmInput($index, $options)) {
-            $index = $this->askForInput();
+            $this->showOptions($options, 'Journals');
+            $index = $this->askForInput('Select one journal: ');
         }
 	
 	return (int) $index;

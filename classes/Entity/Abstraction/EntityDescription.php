@@ -118,7 +118,9 @@ class EntityDescription
         if (!is_a($propertyDescription, 
             '\OJSscript\Entity\Abstraction\PropertyDescription')
         ) {
-            return false;
+            throw new \Exception('Not a proper instance of PropertyDescription'
+                . ' when tyring to add a property description to the '
+                . 'EntityDescription.');
         } else {
             $this->propertiesDescriptions[$propertyDescription->getName()] =
                 $propertyDescription;

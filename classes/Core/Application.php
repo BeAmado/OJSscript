@@ -23,6 +23,7 @@ use OJSscript\UI\Inquirer;
 use OJSscript\UI\Menu;
 use OJSscript\Core\SchemaHandler;
 use OJSscript\Entity\Journal\JournalHandler;
+use OJSscript\Entity\Article\ArticleHandler;
 use OJSscript\Entity\Abstraction\EntityDescriptionRegistry;
 
 /**
@@ -97,35 +98,37 @@ class Application
         
     }
     
-    protected function fetchData()
+    protected function setTablesToUse()
     {
-        
+        $this->tablesToUse[] = 'articles';
+        $this->tablesToUse[] = 'journals';
+        $this->tablesToUse[] = 'roles';
+        $this->tablesToUse[] = 'users';
+    }
+    
+    protected function registerEntityHandlers()
+    {
+        Registry::set('JournalHandler', new JournalHandler());
+        Registry::set('ArticleHandler', new ArticleHandler());
     }
     
     protected function begin()
     {
-        echo 'Application begin' . PHP_EOL;
+        echo PHP_EOL . 'Application begin' . PHP_EOL;
         
-        $this->tablesToUse[] = 'articles';
-        $this->tablesToUse[] = 'journals';
+        $this->setTablesToUse();
         
         //use the SchemaHandler to form the EntityDescription objects.
         $schemaHandler = new SchemaHandler($this->tablesToUse);
         $schemaHandler->registerEntitiesDescriptions();
         
-        /* @var $journalHandler JournalHandler */
-        $journalHandler = new JournalHandler();
-        Registry::set('journalHandler', $journalHandler);
-        
-        
+        $this->registerEntityHandlers();
         
     }
     
     protected function end()
     {
-        echo 'Application end' . PHP_EOL;
-        
-        
+        echo PHP_EOL . 'Application end' . PHP_EOL;
     }
 
     public function run($args = array())
@@ -135,7 +138,13 @@ class Application
         /* @var $journalId integer */
         $journalId = $this->menu->chooseJournal();
         
-        echo PHP_EOL . 'The journal_id chosen was "' . $journalId . '".';
+        /* @var $articles array */
+        $articles = Registry::get('ArticleHandler')->fetchUnpublishedArticles(
+            $journalId
+        );
+        
+        echo PHP_EOL . 'The amount of unpublished articles is ' 
+            . count($articles) . PHP_EOL;
         
         $this->end();
         

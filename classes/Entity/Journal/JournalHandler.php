@@ -29,16 +29,11 @@ use OJSscript\Statement\StatementHandler;
  */
 class JournalHandler extends EntityHandler
 {   
-    public function fetch()
+    public function fetchAll()
     {
         /* @var $executed boolean */
-        $executed = StatementHandler::execute('SelectJournals');
-        
-        if (!$executed) {
-            //THROW EXCEPTION
-            return false;
-        }
-        
+        StatementHandler::execute('SelectJournals');
+       
         $journals = array();
         
         /* @var $arrJournal array */
@@ -55,5 +50,7 @@ class JournalHandler extends EntityHandler
         
         return $journals;
     }
+    
+    
 
 }

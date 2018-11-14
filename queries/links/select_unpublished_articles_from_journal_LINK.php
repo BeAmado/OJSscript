@@ -17,16 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-return array(
-    'name' => 'SelectArticles',
-    'query' => 
-        'SELECT '
-      .     'art.*, '
-      .     'pub_art.* '
-      . 'FROM articles AS art '
-      . 'LEFT JOIN published_articles AS pub_art '
-      .     'ON pub_art.article_id = art.article_id '
-      . 'WHERE art.journal_id = :SelectArticles_journalId',
+/**
+ * This is a link page
+ * it returns an array indicating the location where the file must be found
+ */
 
-    'params' => array('journal_id' => ':SelectArticles_journalId'),
-);
+return array('location' => dirname(__FILE__)
+    . '/../select/article/select_unpublished_articles_from_journal.php');

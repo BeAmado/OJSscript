@@ -1,7 +1,7 @@
 <?php
 
-/*
- * Copyright (C) 2018 bernardo
+/* 
+ * Copyright (C) 2018 Bernardo Amado
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,30 +17,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OJSscript\Entity\Abstraction;
-use OJSscript\Interfaces\EntityImportExport;
-
-/**
- * Description of EntityHandler
- *
- * @author bernardo
- */
-class EntityHandler implements EntityImportExport
-{
+return array(
+    'name' => 'SelectUserRolesFromJournal',
     
-    public function fetch()
-    {
-        
-    }
-
-    public function insert()
-    {
-        
-    }
-
-    public function update()
-    {
-        
-    }
-
-}
+    'query' => 
+        'SELECT * '
+      . 'FROM roles '
+      . 'WHERE journal_id = :SelectUserRolesFromJournal_journalId AND '
+      .          'user_id = :SelectUserRolesFromJournal_userId',
+    
+    'params' => array(
+        'journal_id' => ':SelectUserRolesFromJournal_journalId',
+           'user_id' => ':SelectUserRolesFromJournal_userId',
+    ),
+);

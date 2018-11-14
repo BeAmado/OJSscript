@@ -137,6 +137,21 @@ class Entity implements Cloneable, ArrayRepresentation, LoadFromArray
     }
     
     /**
+     * Returns the array with the entity's settings. If the entity does not 
+     * have settings the return value will be false.
+     * 
+     * @return mixed
+     */
+    public function getSettings()
+    {
+        if ($this->hasSettings()) {
+            return $this->settings;
+        } else {
+            return false;
+        }
+    }
+    
+    /**
      * Checks whether or not the Entity has associated entities in it.
      * 
      * @return boolean
@@ -144,6 +159,21 @@ class Entity implements Cloneable, ArrayRepresentation, LoadFromArray
     public function hasAssociatedEntities()
     {
         return is_array($this->associatedEntities);
+    }
+    
+    /**
+     * Returns the array with the associated entities. If the entity does not 
+     * have associated entities the return value is false;
+     * 
+     * @return mixed
+     */
+    public function getAssociatedEntitites()
+    {
+        if ($this->hasAssociatedEntities()) {
+            return $this->associatedEntities;
+        } else {
+            return false;
+        }
     }
     
     /**
@@ -201,6 +231,18 @@ class Entity implements Cloneable, ArrayRepresentation, LoadFromArray
         
         $this->properties[$propertyName] = $propertyValue;
         return true;
+    }
+    
+    /**
+     * Deletes the specified property.
+     * 
+     * @param string $propertyName
+     */
+    public function unsetProperty($propertyName)
+    {
+        if ($this->hasProperty($propertyName)) {
+            unset($this->properties[$propertyName]);
+        }
     }
     
     /**

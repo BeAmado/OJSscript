@@ -39,6 +39,8 @@ class InputValidator
         'object',
         'resource',
         'arrayOfString',
+        'date',
+        'datetime',
     );
     
     protected static function validateBoolean($data)
@@ -89,6 +91,25 @@ class InputValidator
         }
         
         return true;
+    }
+    
+    protected static function validateDate($data)
+    {
+        
+        if (!self::validateString($data)) {
+            return false;
+        }
+        
+        return DateTime::createFromFormat('Y-m-d', $data) !== false;
+    }
+    
+    protected static function validateDatetime($data)
+    {
+        if (!self::validateString($data)) {
+            return false;
+        }
+        
+        return DateTime::createFromFormat('Y-m-d H:i:s', $data) !== false;
     }
 
     /**

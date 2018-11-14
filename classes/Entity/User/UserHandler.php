@@ -17,30 +17,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OJSscript\Entity\Abstraction;
-use OJSscript\Interfaces\EntityImportExport;
+namespace OJSscript\Entity\User;
+use OJSscript\Entity\Abstraction\EntityHandler;
+use OJSscript\Entity\Abstraction\Entity;
+use OJSscript\Statement\StatementHandler;
 
 /**
- * Description of EntityHandler
+ * Description of UserHandler
  *
  * @author bernardo
  */
-class EntityHandler implements EntityImportExport
+class UserHandler extends EntityHandler
 {
+    /**
+     * 
+     * @param integer|string $journalId
+     * 
+     * @return array
+     */
+    protected function fetchRolesFromJournal($journalId)
+    {
+        StatementHandler::bindSingleParam(
+            'SelectRolesFromJournal',
+            'journal_id',
+            $journalId
+        );
+        
+        
+    }
     
-    public function fetch()
+    public function fetchAll($journalId)
     {
         
     }
-
-    public function insert()
-    {
-        
-    }
-
-    public function update()
-    {
-        
-    }
-
 }

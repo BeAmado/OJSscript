@@ -1,7 +1,7 @@
 <?php
 
 /* 
- * Copyright (C) 2018 Bernardo Amado
+ * Copyright (C) 2018 bernardo
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,10 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * This is a link page
- * it returns an array indicating the location where the file must be found
- */
-
-return array('location' => dirname(__FILE__)
-    . '/../select/article/select_unpublished_articles.php');
+return array(
+    'name' => 'SelectRolesFromJournal',
+    
+    'query' => 
+        'SELECT * '
+      . 'FROM roles '
+      . 'WHERE journal_id = :SelectRolesFromJournal_journalId',
+    
+    'params' => array('journal_id' => ':SelectRolesFromJournal_journalId'),
+);

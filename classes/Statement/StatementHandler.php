@@ -133,7 +133,7 @@ class StatementHandler
      * Executes the prepared statement.
      * 
      * @param string $statementName
-     * @return boolean
+     * @throws \Exception
      */
     public static function execute($statementName)
     {
@@ -141,10 +141,11 @@ class StatementHandler
         $statement = StatementRegistry::get($statementName);
         
         if ($statement->isPrepared()) {
-            return $statement->execute();
+            $statement->execute();
+        } else {
+            throw new \Exception('The statement "' . $statementName . '" is '
+                . 'not prepared.');
         }
-        
-        return false;
     }
     
     /**

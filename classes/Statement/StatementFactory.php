@@ -128,7 +128,7 @@ class StatementFactory
         /* @var $statementName string */
         $statementName = $args['name'];
         
-        $statement = new Statement();
+        $statement = new Statement($statementName);
         
         /* @var $statementInfo array */
         $statementInfo = self::getStatementInfo($statementName);

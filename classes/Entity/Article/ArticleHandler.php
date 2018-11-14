@@ -29,66 +29,30 @@ use OJSscript\Entity\Abstraction\EntityHandler;
  * @author bernardo
  */
 class ArticleHandler extends EntityHandler
-{
+{   
     /**
-     *
-     * @var integer
-     */
-    private $journalId;
-    
-    /**
+     * Fetches the unpublished articles from the specified journal.
      * 
-     * @return integer
-     */
-    public function getJournalId()
-    {
-        return $this->journalId;
-    }
-
-    /**
-     * 
-     * @param integer $journalId
-     */
-    public function setJournalId($journalId)
-    {
-        $this->journalId = $journalId;
-    }
-
-        
-    /**
-     * 
-     * @param integer $journalId
-     */
-    public function __construct($journalId)
-    {
-        $this->setJournalId($journalId);
-    }
-    
-    /**
-     * Fetches the articles of the journal
+     * @param string|integer $journalId
      * 
      * @return array - An array of Entity (articles)
      */
-    public function fetch()
+    public function fetchUnpublishedArticles($journalId)
     {
         StatementHandler::bindSingleParam(
-            'SelectArticles',
+            'SelectArticlesFromJournal',
             'journal_id',
-            $this->getJournalId()
+            $journalId
         );
         
-        /* @var $executed boolean */
-        $executed = StatementHandler::execute('SelectArticles');
-        
-        if (!$executed) {
-            //THROW EXCEPTION
-            return false;
-        }
+        StatementHandler::execute('SelectArticlesFromJournal');
         
         $articles = array();
         
         /* @var $arrArticle array */
-        while ($arrArticle = StatementHandler::fetchNext('SelectArticles')) {
+        while ($arrArticle = 
+            StatementHandler::fetchNext('SelectArticlesFromJournal')) {
+            
             $article = new Entity('articles', true, true);
             $article->loadArray($arrArticle);
             

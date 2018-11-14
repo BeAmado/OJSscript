@@ -18,16 +18,16 @@
  */
 
 return array(
-    'name' => 'SelectUserRoles',
+    'name' => 'SelectPublishedArticlesFromJournal',
     
     'query' => 
-        'SELECT * '
-      . 'FROM roles '
-      . 'WHERE journal_id = :SelectUserRoles_journalId AND '
-      .          'user_id = :SelectUserRoles_userId',
-    
+        'SELECT pub_art.* '
+      . 'FROM published_articles AS pub_art '
+      . 'INNER JOIN articles AS art '
+      .     'ON art.article_id = pub_art.article_id '
+      . 'WHERE art.journal_id = :SelectPublishedArticlesFromJournal_journalId',
+
     'params' => array(
-        'journal_id' => ':SelectUserRoles_journalId',
-           'user_id' => ':SelectUserRoles_userId',
+        'journal_id' => ':SelectPublishedArticlesFromJournal_journalId',
     ),
 );

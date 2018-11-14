@@ -1,7 +1,7 @@
 <?php
 
-/*
- * Copyright (C) 2018 bernardo
+/* 
+ * Copyright (C) 2018 Bernardo Amado
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,30 +17,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OJSscript\Entity\Abstraction;
-use OJSscript\Interfaces\EntityImportExport;
-
-/**
- * Description of EntityHandler
- *
- * @author bernardo
- */
-class EntityHandler implements EntityImportExport
-{
+return array(
+    'name' => 'SelectUnpublishedArticlesFromJournal',
     
-    public function fetch()
-    {
-        
-    }
+    'query' => 
+        'SELECT * '
+      . 'FROM articles '
+      . 'WHERE article_id IN ('
+      .     'SELECT article_id '
+      .     'FROM articles '
+      .     'WHERE article_id NOT IN ('
+      .         'SELECT article_id FROM published_articles'
+      .     ') AND journal_id = :SelectUnpublishedArticles_journalId'
+      . ')',
 
-    public function insert()
-    {
-        
-    }
-
-    public function update()
-    {
-        
-    }
-
-}
+    'params' => array('journal_id' => ':SelectUnpublishedArticles_journalId'),
+);
