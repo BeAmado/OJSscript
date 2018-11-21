@@ -18,10 +18,9 @@
  */
 
 namespace OJSscript\Entity\Abstraction;
-use OJSscript\Core\Registry;
+//use OJSscript\Core\Registry;
 use OJSscript\Core\InputValidator;
-use OJSscript\Entity\Abstraction\PropertyDescription;
-use OJSscript\Entity\Abstraction\EntityDescriptionRegistry;
+
 
 /**
  * Description of EntityValidator
@@ -48,8 +47,8 @@ class EntityValidator
     private $propertiesDescriptions;
     
     /**
-     * An array with the names of the associated entities that are allowed in 
-     * the Entity to be validated.
+     * The names of the entities that may be associated with the entity on 
+     * which this validator acts.
      * 
      * @var array
      */
@@ -64,10 +63,41 @@ class EntityValidator
     
     /**
      *  Constructor for the EntityValidator.
+     *  @param string $tableName
      */
-    public function __construct()
+    public function __construct($tableName)
     {
+        $this->tableName = $tableName;
         $this->exceptionMessages = array();
+    }
+    
+    /**
+     * 
+     * @param string $tableName
+     */
+    private function setPropertiesDescriptions($tableName)
+    {
+        $this->propertiesDescriptions = EntityDescriptionRegistry::get(
+            $tableName)->getPropertiesDescriptions();
+    }
+    
+    /**
+     * 
+     * @param string $tableName
+     * @return array
+     */
+    private function getPropertiesDescriptions($tableName)
+    {
+        if (!isset($this->propertiesDescriptions)) {
+            $this->setPropertiesDescriptions($tableName);
+        }
+        
+        return $this->propertiesDescriptions;
+    }
+    
+    private function unsetPropertiesDescriptions()
+    {
+        $this->propertiesDescriptions = null;
     }
     
     /**
@@ -108,7 +138,7 @@ class EntityValidator
     private function getAllowedAssociatedEntities($tableName)
     {
         /* @var $allowedAssocEntities array */
-        $allowedAssocEntities = Registry::get('allowedAssociatedEntities');
+        /*$allowedAssocEntities = Registry::get('allowedAssociatedEntities');
         
         if (is_array($allowedAssocEntities) && 
             array_key_exists($tableName, $allowedAssocEntities)
@@ -116,7 +146,7 @@ class EntityValidator
             return $allowedAssocEntities[$tableName];
         } else {
             return array();
-        }
+        }*/
     }
     
     /**
@@ -129,8 +159,17 @@ class EntityValidator
     {
         $openingParensPos = strpos($type, '(');
         $closingParensPos = strpos($type, ')');
+        /* @var $length integer */
         $length = $closingParensPos - $openingParensPos - 1;
+        
+        /* @var $startPos integer */
         $startPos = $openingParensPos + 1;
+        
+        if ($closingParensPos && $openingParensPos && ($length > 0)) {
+            return (int) substr($type, $startPos, $length);
+        } else {
+            return false;
+        }
         
     }
     
@@ -141,22 +180,37 @@ class EntityValidator
      */
     private function validatePropertyValue($propertyValue, $propertyDescription)
     {
+        /* @var $msg string */
+        $msg = null;
+        
         /* @var $type string */
         $type = strtolower($propertyDescription->getType());
+        
         if (in_array($type, array('date', 'datetime'))) {
-            if (!InputValidator::validate($propertyValue, $type)) {
-                $this->addExceptionMessage('Incorrect "' . $type . '" value '
-                    . 'for the property "' 
-                    . $propertyDescription->getName() . '".'
-                );
-            }
-        } elseif ($type === 'double') {
-            if (!is_numeric($propertyValue)) {
-                $this->addExceptionMessage('Incorrect type "' 
-                    . gettype($propertyValue) . '" for the property "'
-                    . $propertyDescription->getName() . '".');
-            }
+            $msg = (InputValidator::validate($propertyValue, $type)) ? null :
+                'Incorrect "' . $type . '" value for the property "' 
+              . $propertyDescription->getName() . '".';
+            
+        } elseif ($type === 'double' && !is_numeric($propertyValue)) {
+            $msg = 'Incorrect type "' . gettype($propertyValue) . '" for '
+                . 'the property "'. $propertyDescription->getName() . '".';
+            
+        } else {
+            /* @var $maxSize integer */
+            $maxSize = $this->getMaxSize($type);
+            
+            /* @var $strValue string */
+            $strValue = "$propertyValue";
+            
+            $msg = (strlen($strValue) > $maxSize) ? null : 'The property "' 
+                . $propertyDescription->getName() . '" must be at most ' 
+                . $maxSize . ' characters long.';
+            
         }
+        
+        if ($msg != null) {
+            $this->addExceptionMessage($msg);
+        } 
     }
     
     /**
@@ -165,11 +219,13 @@ class EntityValidator
      * @param string $propertyName
      * @param string|integer $propertyValue
      */
-    public function validateProperty($tableName, $propertyName, $propertyValue)
-    {
+    private function validateEntityProperty(
+        $tableName,
+        $propertyName,
+        $propertyValue
+    ) {
         /* @var $propertiesDescriptions array */
-        $propertiesDescriptions = EntityDescriptionRegistry::get(
-            $tableName)->getPropertiesDescriptions();
+        $propertiesDescriptions = $this->getPropertiesDescriptions($tableName);
         
         if (!in_array($propertyName, array_keys($propertiesDescriptions))) {
             $this->addExceptionMessage('The property "' . $propertyName 
@@ -179,7 +235,7 @@ class EntityValidator
             /* @var $propertyDescription PropertyDescription */
             $propertyDescription = $propertiesDescriptions[$propertyName];
             
-            
+            $this->validatePropertyValue($propertyValue, $propertyDescription);
             
         }
         
@@ -199,11 +255,13 @@ class EntityValidator
         } elseif ($this->tableName !== $entity->getTableName()) {
             
             $this->addExceptionMessage('The entity\'s name "' 
-                . $entity->getTableName() .'" does not math with the '
+                . $entity->getTableName() .'" does not match with the '
                 . 'validator\'s "' . $this->tableName . '".'
             );
             
         }
+        
+        $this->throwIfAny();
     }
     
     /**
@@ -213,9 +271,11 @@ class EntityValidator
     private function validateEntityProperties($entity)
     {
         /*@var $propertyDescription PropertyDescription */
-        foreach ($this->propertiesDescriptions as $propertyDescription) {
+        foreach ($this->getPropertiesDescriptions($entity->getTableName()) 
+                 as $propertyDescription) {
             if ($entity->hasProperty($propertyDescription->getName())) {
-                $this->validateProperty(
+                $this->validateEntityProperty(
+                    $entity->getTableName(),
                     $propertyDescription->getName(), 
                     $entity->getProperty($propertyDescription->getName())
                 );
@@ -226,6 +286,8 @@ class EntityValidator
                 );
             }
         }
+        
+        $this->throwIfAny();
     }
     
     /**
@@ -250,8 +312,11 @@ class EntityValidator
                 break;
             } 
             
+            $this->throwIfAny();
+            
             /* @var $assocEntity Entity */
             foreach ($assocEntities as $assocEntity) {
+                $this->unsetPropertiesDescriptions();
                 $this->validateEntity($assocEntity);
             }
         }
@@ -269,6 +334,7 @@ class EntityValidator
     public function validateEntity($entity)
     {
         $this->clearExceptionMessages();
+        $this->unsetPropertiesDescriptions();
         
         $this->validateEntityInstance($entity);
         
@@ -282,49 +348,21 @@ class EntityValidator
     }
     
     /**
-     * Check if the array is valid for loading entity's information.
      * 
-     * @param array $array
-     * 
-     * @param boolean $verbose
-     * 
-     * @return array
+     * @param string $tableName
+     * @param string $propertyName
+     * @param mixed $propertyValue
      */
-    public function validateArray($array)
-    {
-        if (!is_array($array) || empty($array)) {
-            return false;
-        }
-        
-        /* @var $message string */
-        $message = '';
-        
-        /* @var $isValid boolean */
-        $valid = true;
-        
-        /* @var $propertyDescription PropertyDescription */
-        foreach ($this->propertiesDescriptions as $propertyDescription) {
-            if (!$propertyDescription->getNullable() &&
-                !in_array($propertyDescription->getName(), $array)
-            ) {
-                $message .= 'The property "' . $propertyDescription->getName()
-                    . '" which must NOT be null is missing.';
-                
-                $valid = false;
-            }
-        }
-        
-        /* @var $key string */
-        /* @var $value mixed */
-        foreach ($array as $key => $value) {
-            /* @var $validation array */
-            $validation = $this->validateProperty($key, $value);
-            if (!$validation['valid']) {
-                $valid = false;
-                $message .= $validation['message'] . PHP_EOL;
-            }
-        }
-        
-        return array('valid' => $valid, 'message' => $message);
+    public function validateProperty(
+        $tableName,
+        $propertyName,
+        $propertyValue
+    ) {
+        $this->unsetPropertiesDescriptions();
+        $this->validateEntityProperty(
+            $tableName,
+            $propertyName,
+            $propertyValue
+        );
     }
 }
