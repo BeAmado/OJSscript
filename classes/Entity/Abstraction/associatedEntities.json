@@ -1,0 +1,31 @@
+{
+    "articles": [
+        "article_comments",
+        "article_files",
+        "article_galleys",
+        "article_search_objects",
+        "article_supplementary_files",
+        "authors",
+        "edit_assignments",
+        "edit_decisions",
+        "editors",
+        "review_assignments",
+        "review_rounds",
+        "review_form_responses",
+        "reviewers",
+        "sections",
+        "users"
+
+    ],
+    "article_galleys": [
+        "article_html_galley_images", 
+        "article_xml_galleys"
+    ],
+    "article_search_objects": [
+        "article_search_keyword_list",
+        "article_search_object_keywords"
+    ],
+    "sections": [],
+    "submissions": [],
+    "users": []
+}

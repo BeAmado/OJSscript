@@ -18,7 +18,6 @@
  */
 
 namespace OJSscript\Entity\Abstraction;
-//use OJSscript\Core\Registry;
 use OJSscript\Core\InputValidator;
 
 
@@ -62,55 +61,60 @@ class EntityValidator
     private $exceptionMessages;
     
     /**
+     * 
+     * @return array
+     */
+    private function getAssociatedEntitiesNames()
+    {
+        /* @var $assocEntitiesFile string */
+        $assocEntitiesFile = dirname(__FILE__) . '/associatedEntities.json';
+        
+        /* @var $fileContent string */
+        $fileContent = file_get_contents($assocEntitiesFile);
+        
+        /* @var $assocEntities array */
+        $assocEntities = json_decode($fileContent, true);
+        
+        if (array_key_exists($this->tableName, $assocEntities)) {
+            return $assocEntities[$this->tableName];
+        } else {
+            return array();
+        }
+    }
+    
+    /**
      *  Constructor for the EntityValidator.
+     * 
      *  @param string $tableName
      */
-    public function __construct($tableName)
+    public function __construct($tableName) 
     {
         $this->tableName = $tableName;
         $this->exceptionMessages = array();
-    }
-    
-    /**
-     * 
-     * @param string $tableName
-     */
-    private function setPropertiesDescriptions($tableName)
-    {
         $this->propertiesDescriptions = EntityDescriptionRegistry::get(
-            $tableName)->getPropertiesDescriptions();
+            $this->tableName)->getPropertiesDescriptions();
+        $this->allowedAssociatedEntities = $this->getAssociatedEntitiesNames();
     }
+    
     
     /**
-     * 
-     * @param string $tableName
-     * @return array
-     */
-    private function getPropertiesDescriptions($tableName)
-    {
-        if (!isset($this->propertiesDescriptions)) {
-            $this->setPropertiesDescriptions($tableName);
-        }
-        
-        return $this->propertiesDescriptions;
-    }
-    
-    private function unsetPropertiesDescriptions()
-    {
-        $this->propertiesDescriptions = null;
-    }
-    
-    /**
+     * Adds a message to the exceptionMessage array.
      * 
      * @param string $message
      */
     private function addExceptionMessage($message)
     {
-        if (InputValidator::validate($message, 'string')) {
+        if ($message != null && InputValidator::validate($message, 'string')) {
             $this->exceptionMessages[] = $message;
         }
     }
     
+    /**
+     * Throws an exception if there is a message logged in the array 
+     * exceptionMessages.
+     * 
+     * @throws \Exception
+     */
     private function throwIfAny()
     {
         if (!empty($this->exceptionMessages)) {
@@ -124,29 +128,12 @@ class EntityValidator
         }
     }
     
+    /**
+     *  Resets the array exceptionMessages.
+     */
     private function clearExceptionMessages()
     {
         $this->exceptionMessages = array();
-    }
-    
-    /**
-     * 
-     * @param string $tableName
-     * 
-     * @return array
-     */
-    private function getAllowedAssociatedEntities($tableName)
-    {
-        /* @var $allowedAssocEntities array */
-        /*$allowedAssocEntities = Registry::get('allowedAssociatedEntities');
-        
-        if (is_array($allowedAssocEntities) && 
-            array_key_exists($tableName, $allowedAssocEntities)
-        ) {
-            return $allowedAssocEntities[$tableName];
-        } else {
-            return array();
-        }*/
     }
     
     /**
@@ -208,38 +195,45 @@ class EntityValidator
             
         }
         
-        if ($msg != null) {
-            $this->addExceptionMessage($msg);
-        } 
+        $this->addExceptionMessage($msg);
     }
     
     /**
      * 
-     * @param string $tableName
      * @param string $propertyName
      * @param string|integer $propertyValue
      */
     private function validateEntityProperty(
-        $tableName,
         $propertyName,
         $propertyValue
     ) {
-        /* @var $propertiesDescriptions array */
-        $propertiesDescriptions = $this->getPropertiesDescriptions($tableName);
-        
-        if (!in_array($propertyName, array_keys($propertiesDescriptions))) {
-            $this->addExceptionMessage('The property "' . $propertyName 
-                . '" is not declared in the OJS schema.');
-        } else {
-            
-            /* @var $propertyDescription PropertyDescription */
-            $propertyDescription = $propertiesDescriptions[$propertyName];
+        if (array_key_exists($propertyName, $this->propertiesDescriptions)) {
+             /* @var $propertyDescription PropertyDescription */
+            $propertyDescription = $this->propertiesDescriptions[$propertyName];
             
             $this->validatePropertyValue($propertyValue, $propertyDescription);
             
+        } else {
+           $this->addExceptionMessage('The property "' . $propertyName 
+                . '" is not declared in the OJS schema.');
         }
+    }
+    
+    /**
+     * 
+     * @param string $propertyName
+     * @param mixed $propertyValue
+     */
+    public function validateProperty(
+        $propertyName,
+        $propertyValue
+    ) {
+        $this->clearExceptionMessages();
+        
+        $this->validateEntityProperty($propertyName, $propertyValue);
         
         $this->throwIfAny();
+        $this->clearExceptionMessages();
     }
     
     /**
@@ -271,11 +265,9 @@ class EntityValidator
     private function validateEntityProperties($entity)
     {
         /*@var $propertyDescription PropertyDescription */
-        foreach ($this->getPropertiesDescriptions($entity->getTableName()) 
-                 as $propertyDescription) {
+        foreach ($this->propertiesDescriptions as $propertyDescription) {
             if ($entity->hasProperty($propertyDescription->getName())) {
                 $this->validateEntityProperty(
-                    $entity->getTableName(),
                     $propertyDescription->getName(), 
                     $entity->getProperty($propertyDescription->getName())
                 );
@@ -301,10 +293,7 @@ class EntityValidator
         foreach ($entity->getAssociatedEntitites() 
             as $assocEntityName => $assocEntities) {
             
-            if (!in_array(
-                    $assocEntityName,
-                    $this->getAllowedAssociatedEntities($entity->getTableName())
-            )) {
+            if (!in_array($assocEntityName, $this->allowedAssociatedEntities)) {
                 $this->addExceptionMessage(
                     'The entity "' . $assocEntityName . '" is not allowed to '
                     . 'be associated to "' . $entity->getTableName() . '".'
@@ -312,18 +301,16 @@ class EntityValidator
                 break;
             } 
             
-            $this->throwIfAny();
-            
             /* @var $assocEntity Entity */
             foreach ($assocEntities as $assocEntity) {
-                $this->unsetPropertiesDescriptions();
                 $this->validateEntity($assocEntity);
             }
         }
     }
     
     /**
-     * Validates the entity data.
+     * Validates the entity data, being the properties, settings and associated 
+     * entities.
      * 
      * @param Entity $entity
      * 
@@ -334,7 +321,6 @@ class EntityValidator
     public function validateEntity($entity)
     {
         $this->clearExceptionMessages();
-        $this->unsetPropertiesDescriptions();
         
         $this->validateEntityInstance($entity);
         
@@ -345,24 +331,7 @@ class EntityValidator
         }
         
         $this->throwIfAny();
+        $this->clearExceptionMessages();
     }
     
-    /**
-     * 
-     * @param string $tableName
-     * @param string $propertyName
-     * @param mixed $propertyValue
-     */
-    public function validateProperty(
-        $tableName,
-        $propertyName,
-        $propertyValue
-    ) {
-        $this->unsetPropertiesDescriptions();
-        $this->validateEntityProperty(
-            $tableName,
-            $propertyName,
-            $propertyValue
-        );
-    }
 }

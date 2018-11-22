@@ -249,7 +249,9 @@ class SchemaHandler
         
         /* @var $table \DOMElement */
         foreach ($tables as $table) {
-            if (in_array($table->getAttribute('name'), $this->tablesToBeUsed)) {
+            if (empty($this->tablesToBeUsed) ||
+                in_array($table->getAttribute('name'), $this->tablesToBeUsed)
+            ) {
                 $this->makeAndRegisterEntityDescription($table);
             }
         }

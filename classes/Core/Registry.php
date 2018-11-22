@@ -28,13 +28,15 @@ class Registry
 {
     
     /**
-     * The registered data
+     * The registered data.
+     * 
      * @var array
      */
     protected static $registry = array();
     
     /**
-     * Tests if a named value is already registered
+     * Tests if a record identifier is already registered
+     * 
      * @param string $key
      * @return boolean
      */
@@ -43,6 +45,12 @@ class Registry
         return array_key_exists($key, self::$registry);
     }
     
+    /**
+     * Gets the value recorded
+     * 
+     * @param string $key - The record identifier
+     * @return mixed
+     */
     public static function get($key)
     {
         $value = null;
@@ -52,6 +60,12 @@ class Registry
         return $value;
     }
     
+    /**
+     * Gets the value recorded by reference.
+     * 
+     * @param string $key - the record identifier
+     * @return mixed - A reference to the recorded value.
+     */
     public static function &getByReference($key) 
     {
         $value = null;
@@ -61,16 +75,34 @@ class Registry
         return $value;
     }
     
+    /**
+     * Sets the value for the identified record which will either be created or 
+     * updated.
+     * 
+     * @param string $key
+     * @param mixed $value
+     */
     public static function set($key, $value) 
     {
         self::$registry[$key] = $value;
     }
     
+    /**
+     * Sets a record by reference. 
+     * 
+     * @param string $key - The record identifier
+     * @param mixed $value - The value to be registered
+     */
     public static function setByReference($key, &$value) 
     {
         self::$registry[$key] =& $value;
     }
     
+    /**
+     * Deletes the specified item from the registry.
+     * 
+     * @param string $key - The record identifier
+     */
     public static function delete($key)
     {
         if (self::isRegistered($key)) {
@@ -78,6 +110,9 @@ class Registry
         }
     }
     
+    /**
+     * Deletes all the records in the registry.
+     */
     public static function clear()
     {
         foreach (array_keys(self::$registry) as $key) {

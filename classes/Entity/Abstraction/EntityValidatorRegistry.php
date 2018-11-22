@@ -27,11 +27,17 @@ use OJSscript\Core\Registry;
  */
 class EntityValidatorRegistry extends Registry
 {
-    public static function get($key)
+    /**
+     * 
+     * @param string $tableName
+     */
+    public static function get($tableName)
     {
-        //parent::get($key);
-        if (!self::isRegistered($key)) {
-            
+        if (!self::isRegistered($tableName)) {
+            $entityValidator = new EntityValidator($tableName);
+            self::set($tableName, $entityValidator);
         }
+        
+        parent::get($tableName);
     }
 }
