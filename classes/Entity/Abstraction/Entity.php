@@ -210,27 +210,17 @@ class Entity implements Cloneable, ArrayRepresentation, LoadFromArray
      * 
      * @param string $propertyName
      * @param mixed $propertyValue
-     * @return boolean
      */
     public function setProperty(
         $propertyName,
         $propertyValue
     ) {
         /* @var $validator EntityValidator */
-        //$validator = EntityValidatorRegistry::get($this->getTableName());
+        $validator = EntityValidatorRegistry::get($this->getTableName());
         
-        /* @var $result array */
-       // $result = $validator->validateProperty($propertyName, $propertyValue);
-        
-//        if ($result['isValid']) {
-//            $this->properties[$propertyName] = $propertyValue;
-//            return true;
-//        } else {
-//            return false;
-//        }
+        $validator->validateProperty($propertyName, $propertyValue);
         
         $this->properties[$propertyName] = $propertyValue;
-        return true;
     }
     
     /**
@@ -248,22 +238,18 @@ class Entity implements Cloneable, ArrayRepresentation, LoadFromArray
     /**
      * Adds the setting.
      * 
-     * @param EntitySetting $setting
+     * @param \OJSscript\Entity\Abstraction EntitySetting $setting
      * 
      * @return boolean
      */
     public function addSetting($setting)
     {
-        if (
-            !$this->hasSettings() ||
-            !is_a($setting, '\OJSscript\Entity\Abstraction\EntitySetting') ||
-            ($setting->getEntityType() !== $this->getEntityType())
-        ) {
-            return false;
-            
-        } else {
+        if ($this->hasSettings()) {
+            /* @var $validator EntityValidator */
+            $validator = EntityValidatorRegistry::get($this->getTableName());
+            $validator->validateSetting($setting);
+
             $this->settings[] = $setting;
-            return true;
         }
     }
     
@@ -276,15 +262,12 @@ class Entity implements Cloneable, ArrayRepresentation, LoadFromArray
      */
     public function addAssociatedEntity($entity)
     {
-        if (
-            !$this->hasAssociatedEntities() ||
-            !is_a($entity, '\OJSscript\Entity\Abstraction\Entity')
-        ) {
-            return false;
-            
-        } else {
+        if ($this->hasAssociatedEntities()) {
+            /* @var $validator EntityValidator */
+            $validator = EntityValidatorRegistry::get($entity->getTableName());
+            $validator->validateEntity($entity);
+
             $this->associatedEntities[$entity->getTableName()][] = $entity;
-            return true;
         }
     }
 

@@ -61,6 +61,8 @@ class EntityValidator
     private $exceptionMessages;
     
     /**
+     * Returns an array with the tables' names of the entities that might be 
+     * associated to the one to be validated.
      * 
      * @return array
      */
@@ -137,6 +139,11 @@ class EntityValidator
     }
     
     /**
+     * Gets the maximum size specified for a database type.
+     * 
+     * For example: 
+     * int(13) would return 13,
+     * varchar(243) would return 243.
      * 
      * @param string $type
      * 
@@ -161,6 +168,7 @@ class EntityValidator
     }
     
     /**
+     * Validates the value for a property whose description is given.
      * 
      * @param mixed $propertyValue
      * @param PropertyDescription $propertyDescription
@@ -199,6 +207,7 @@ class EntityValidator
     }
     
     /**
+     * Validates if the specified property for the entity.
      * 
      * @param string $propertyName
      * @param string|integer $propertyValue
@@ -220,25 +229,10 @@ class EntityValidator
     }
     
     /**
+     * Validates if the parameter **$entity** is an instance of
+     * \OJSscript\Entity\Abstraction\Entity.
      * 
-     * @param string $propertyName
-     * @param mixed $propertyValue
-     */
-    public function validateProperty(
-        $propertyName,
-        $propertyValue
-    ) {
-        $this->clearExceptionMessages();
-        
-        $this->validateEntityProperty($propertyName, $propertyValue);
-        
-        $this->throwIfAny();
-        $this->clearExceptionMessages();
-    }
-    
-    /**
-     * 
-     * @param Entity $entity
+     * @param \OJSscript\Entity\Abstraction\Entity $entity
      */
     private function validateEntityInstance($entity)
     {
@@ -259,8 +253,9 @@ class EntityValidator
     }
     
     /**
+     * Validates all the properties of the Entity object given.
      * 
-     * @param Entity $entity
+     * @param \OJSscript\Entity\Abstraction\Entity $entity
      */
     private function validateEntityProperties($entity)
     {
@@ -283,8 +278,9 @@ class EntityValidator
     }
     
     /**
+     * Validates the associated entities of the given Entity object.
      * 
-     * @param Entity $entity
+     * @param \OJSscript\Entity\Abstraction\Entity $entity
      */
     private function validateAssociatedEntities($entity)
     {
@@ -301,9 +297,12 @@ class EntityValidator
                 break;
             } 
             
-            /* @var $assocEntity Entity */
+            /* @var $validator EntityValidator */
+            $validator = EntityValidatorRegistry::get($assocEntityName);
+            
+            /* @var $assocEntity \OJSscript\Entity\Abstraction\Entity */
             foreach ($assocEntities as $assocEntity) {
-                $this->validateEntity($assocEntity);
+                $validator->validateEntity($assocEntity);
             }
         }
     }
@@ -312,7 +311,7 @@ class EntityValidator
      * Validates the entity data, being the properties, settings and associated 
      * entities.
      * 
-     * @param Entity $entity
+     * @param \OJSscript\Entity\Abstraction\Entity $entity
      * 
      * @param boolean $verbose
      * 
@@ -332,6 +331,46 @@ class EntityValidator
         
         $this->throwIfAny();
         $this->clearExceptionMessages();
+    }
+    
+    /**
+     * Validates one specified property for the entity.
+     * 
+     * @param string $propertyName
+     * @param mixed $propertyValue
+     */
+    public function validateProperty(
+        $propertyName,
+        $propertyValue
+    ) {
+        $this->clearExceptionMessages();
+        
+        $this->validateEntityProperty($propertyName, $propertyValue);
+        
+        $this->throwIfAny();
+        $this->clearExceptionMessages();
+    }
+    
+    /**
+     * Validates the EntitySetting.
+     * 
+     * @param \OJSscript\Entity\Abstraction\EntitySetting $setting
+     * 
+     * @throws \Exception
+     */
+    public function validateSetting($setting)
+    {
+        /* @var $msg string */
+        $msg = null;
+        
+        if (!is_a($setting, '\OJSscript\Entity\Abstraction\EntitySetting')) {
+            $msg = 'The object passed to the method "addSetting" is not an '
+                . 'instance of \OJSscript\Entity\Abstraction\EntitySetting.';
+        }
+        
+        if ($msg != null) {
+            throw new \Exception($msg);
+        }
     }
     
 }

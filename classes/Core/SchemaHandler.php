@@ -234,6 +234,41 @@ class SchemaHandler
     }
     
     /**
+     * Registers that the entity has settings.
+     * 
+     * @param string $settingsTableName
+     */
+    private function registerEntityHasSettings($settingsTableName)
+    {
+        if (!Registry::isRegistered('tables_that_have_settings')) {
+            Registry::set('tables_that_have_settings', array());
+        }
+        
+        /* @var $tableName string */
+        $tableName = null;
+        
+        //////// form the name of the table that has settings ///////
+        /* @var $length integer */
+        $length = strpos($settingsTableName, '_settings');
+        
+        /* @var $aux string */
+        $aux = substr($settingsTableName, 0, $length);
+        
+        if (substr($aux, -1) === 'y') {
+            $tableName = substr($aux, 0, -1) . 'ies';
+        } else {
+            $tableName = $aux . 's';
+        }
+        //////////////////////////////////////////////////////////////
+        
+        /* @var $tablesNames array */
+        $tablesNames &= Registry::getByReference('tables_that_have_settings');
+        $tablesNames[] = $tableName;
+        
+        unset($tablesNames);
+    }
+    
+    /**
      * Creates and registers objects from class EntityDescription based on the 
      * xml schema present in the specified file.
      * 
@@ -249,7 +284,10 @@ class SchemaHandler
         
         /* @var $table \DOMElement */
         foreach ($tables as $table) {
-            if (empty($this->tablesToBeUsed) ||
+            if (strpos($table->getAttribute('name'), 'settings') !== false) {
+                $this->registerEntityHasSettings($table->getAttribute('name'));
+            } elseif (
+                empty($this->tablesToBeUsed) ||
                 in_array($table->getAttribute('name'), $this->tablesToBeUsed)
             ) {
                 $this->makeAndRegisterEntityDescription($table);

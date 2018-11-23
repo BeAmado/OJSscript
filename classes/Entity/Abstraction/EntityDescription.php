@@ -35,6 +35,21 @@ class EntityDescription
     private $tableName;
     
     /**
+     * A boolean value indicating whether or not the entity has settings.
+     * 
+     * @var boolean
+     */
+    private $hasSettings;
+    
+    /**
+     * A boolean value indicating whether or not the entity has other entities 
+     * associated to it.
+     * 
+     * @var boolean
+     */
+    private $hasAssociatedEntities;
+    
+    /**
      * Array of objects from the class PropertyDescription
      * @var array
      */
@@ -58,22 +73,73 @@ class EntityDescription
     }
     
     /**
+     * 
+     * @param string $tableName
+     * @param boolean $hasSettings
+     * @param boolean $hasAssociatedEntities
+     */
+    private function validateConstructorParameters(
+        $tableName,
+        $hasSettings,
+        $hasAssociatedEntities
+    ) {
+        $throwException = false;
+        $message = 'Constructor of the class EntityDescription:' . PHP_EOL;
+        
+        if (!InputValidator::validate($tableName, 'string')) {
+            $throwException = true;
+            $message .= 'The first argument "$tableName" must be a string. The '
+                . 'given type was "' . gettype($tableName) . '".' . PHP_EOL;
+        }
+        
+        if (!InputValidator::validate($hasSettings, 'boolean')) {
+            $throwException = true;
+            $message .= 'The second argument "$hasSettings" must be a boolean. '
+                . 'The given type was "' . gettype($hasSettings) . '".' . PHP_EOL;
+        }
+        
+        if (!InputValidator::validate($hasAssociatedEntities, 'boolean')) {
+            $throwException = true;
+            $message .= 'The second argument "$hasAssociatedEntities" must be '
+                . 'a boolean. The given type was "' 
+                . gettype($hasAssociatedEntities) . '".' . PHP_EOL;
+        }
+        
+        if ($throwException) {
+            throw new Exception;
+        }
+    }
+    
+    /**
      * Constructor of the class EntityDescription.
      * 
      * @param string $tableName - The name of the table that the Entity 
      * represents.
      * 
-     * @param array $associatedEntitiesNames - The names of the tables Entities
-     * that might be associated with the Entity this object describes.
+     * @param boolean $hasSettings
+     * 
+     * @param boolean $hasAssociatedEntities
      * 
      * @return void
      * 
      * @throws \Exception
      */
-    public function __construct($tableName)
-    {
+    public function __construct(
+        $tableName,
+        $hasSettings = false,
+        $hasAssociatedEntities = false
+    ) {
         $this->validateTableName($tableName);
         $this->tableName = $tableName;
+        
+        if (InputValidator::validate($hasSettings, 'boolean')) {
+            $this->hasSettings = $hasSettings;
+        }
+        
+        if (InputValidator::validate($hasAssociatedEntities, 'boolean')) {
+            $this->hasAssociatedEntities = $hasAssociatedEntities;
+        }
+        
         $this->propertiesDescriptions = array();
     }
     

@@ -18,10 +18,8 @@
  */
 
 namespace OJSscript\Core;
-use OJSscript\Core\Registry;
 use OJSscript\UI\Inquirer;
 use OJSscript\UI\Menu;
-use OJSscript\Core\SchemaHandler;
 use OJSscript\Entity\Journal\JournalHandler;
 use OJSscript\Entity\Article\ArticleHandler;
 use OJSscript\Entity\Abstraction\EntityDescriptionRegistry;

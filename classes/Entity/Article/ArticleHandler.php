@@ -20,6 +20,7 @@
 namespace OJSscript\Entity\Article;
 use OJSscript\Statement\StatementHandler;
 use OJSscript\Entity\Abstraction\Entity;
+use OJSscript\Entity\Abstraction\EntitySetting;
 use OJSscript\Entity\Abstraction\EntityHandler;
 //use OJSscript\Statement\StatementRegistry;
 
@@ -30,6 +31,27 @@ use OJSscript\Entity\Abstraction\EntityHandler;
  */
 class ArticleHandler extends EntityHandler
 {   
+    /**
+     * Fetches the article's settings.
+     * 
+     * @param Entity $article
+     */
+    private function fetchArticleSettings($article)
+    {
+        StatementHandler::bindParams('SelectArticleSettings', $article);
+        StatementHandler::execute('SelectArticleSettings');
+        
+        /* @var $arrSetting array */
+        while ($arrSetting = 
+            StatementHandler::fetchNext('SelectArticleSettings')
+        ) {
+            $articleSetting = new EntitySetting($article->getEntityType());
+            $articleSetting->loadArray($arrSetting);
+            
+            $article->addSetting($articleSetting);
+        }
+    }
+    
     /**
      * Fetches the unpublished articles from the specified journal.
      * 
@@ -51,10 +73,14 @@ class ArticleHandler extends EntityHandler
         
         /* @var $arrArticle array */
         while ($arrArticle = 
-            StatementHandler::fetchNext('SelectArticlesFromJournal')) {
+            StatementHandler::fetchNext('SelectArticlesFromJournal')
+        ) {
             
             $article = new Entity('articles', true, true);
             $article->loadArray($arrArticle);
+            
+            //get the article settings
+            $this->fetchArticleSettings($article);
             
             //get the associated entities
             //########################
