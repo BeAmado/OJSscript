@@ -218,6 +218,8 @@ class Entity implements Cloneable, ArrayRepresentation, LoadFromArray
         /* @var $validator EntityValidator */
         $validator = EntityValidatorRegistry::get($this->getTableName());
         
+        get_class($validator); exit();
+        
         $validator->validateProperty($propertyName, $propertyValue);
         
         $this->properties[$propertyName] = $propertyValue;

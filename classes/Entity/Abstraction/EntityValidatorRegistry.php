@@ -38,6 +38,8 @@ class EntityValidatorRegistry extends Registry
             self::set($tableName, $entityValidator);
         }
         
-        parent::get($tableName);
+        //var_dump(self::$registry[$tableName]);
+        
+        return self::$registry[$tableName];
     }
 }

@@ -24,7 +24,7 @@ namespace OJSscript\Core;
  *
  * @author Bernardo Amado
  */
-class Registry
+class RegistryNotStatic 
 {
     
     /**
@@ -32,7 +32,12 @@ class Registry
      * 
      * @var array
      */
-    private static $registry = array();
+    protected $registry;
+    
+    public function __construct()
+    {
+        $this->registry = array();
+    }
     
     /**
      * Tests if a record identifier is already registered
@@ -40,9 +45,9 @@ class Registry
      * @param string $key
      * @return boolean
      */
-    public static function isRegistered($key) 
+    public function isRegistered($key) 
     {
-        return array_key_exists($key, self::$registry);
+        return array_key_exists($key, $this->registry);
     }
     
     /**
@@ -51,11 +56,11 @@ class Registry
      * @param string $key - The record identifier
      * @return mixed
      */
-    public static function get($key)
+    public function get($key)
     {
         $value = null;
-        if (self::isRegistered($key)) {
-            $value = self::$registry[$key];
+        if ($this->isRegistered($key)) {
+            $value = $this->registry[$key];
         }
         return $value;
     }
@@ -66,11 +71,11 @@ class Registry
      * @param string $key - the record identifier
      * @return mixed - A reference to the recorded value.
      */
-    public static function &getByReference($key) 
+    public function &getByReference($key) 
     {
         $value = null;
-        if (self::isRegistered($key)) {
-            $value =& self::$registry[$key];
+        if ($this->isRegistered($key)) {
+            $value =& $this->registry[$key];
         }
         
         return $value;
@@ -83,9 +88,9 @@ class Registry
      * @param string $key
      * @param mixed $value
      */
-    public static function set($key, $value) 
+    public function set($key, $value) 
     {
-        self::$registry[$key] = $value;
+        $this->registry[$key] = $value;
     }
     
     /**
@@ -94,9 +99,9 @@ class Registry
      * @param string $key - The record identifier
      * @param mixed $value - The value to be registered
      */
-    public static function setByReference($key, &$value) 
+    public function setByReference($key, &$value) 
     {
-        self::$registry[$key] =& $value;
+        $this->registry[$key] =& $value;
     }
     
     /**
@@ -104,20 +109,20 @@ class Registry
      * 
      * @param string $key - The record identifier
      */
-    public static function delete($key)
+    public function delete($key)
     {
-        if (self::isRegistered($key)) {
-            unset(self::$registry[$key]);
+        if ($this->isRegistered($key)) {
+            unset($this->registry[$key]);
         }
     }
     
     /**
      * Deletes all the records in the registry.
      */
-    public static function clear()
+    public function clear()
     {
-        foreach (array_keys(self::$registry) as $key) {
-            unset(self::$registry[$key]);
+        foreach (array_keys($this->registry) as $key) {
+            unset($this->registry[$key]);
         }
     }
     

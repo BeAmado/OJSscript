@@ -262,7 +262,8 @@ class SchemaHandler
         //////////////////////////////////////////////////////////////
         
         /* @var $tablesNames array */
-        $tablesNames &= Registry::getByReference('tables_that_have_settings');
+        $tablesNames =& Registry::getByReference('tables_that_have_settings');
+        
         $tablesNames[] = $tableName;
         
         unset($tablesNames);
