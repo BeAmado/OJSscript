@@ -24,7 +24,7 @@ namespace OJSscript\Core;
  *
  * @author Bernardo Amado
  */
-class RegistryNotStatic 
+class NonStaticRegistry
 {
     
     /**

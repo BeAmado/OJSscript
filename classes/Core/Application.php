@@ -23,6 +23,7 @@ use OJSscript\UI\Menu;
 use OJSscript\Entity\Journal\JournalHandler;
 use OJSscript\Entity\Article\ArticleHandler;
 use OJSscript\Entity\Abstraction\EntityDescriptionRegistry;
+use OJSscript\Entity\Abstraction\EntityValidatorRegistry;
 
 /**
  * Description of Application
@@ -67,33 +68,13 @@ class Application
         $this->tablesToUse = array();
     }
     
-    protected function showDescriptions()
+    private function setRegistries()
     {
-        echo 'The entities descriptions: ' . PHP_EOL;
-        
-        $descriptions = array();
-        
-        $descriptions[] = EntityDescriptionRegistry::get('articles');
-        $descriptions[] = EntityDescriptionRegistry::get('article_settings');
-        $descriptions[] = EntityDescriptionRegistry::get('users');
-        $descriptions[] = EntityDescriptionRegistry::get('sections');
-        $descriptions[] = EntityDescriptionRegistry::get('review_assignments');
-        
-        /* @var $entityDescription \OJSscript\Entity\Abstraction\EntityDescription */
-        foreach ($descriptions as $entityDescription) {
-            /* @var $properties array */
-            $properties = $entityDescription->getPropertiesDecriptions();
-            echo PHP_EOL . $entityDescription->getName() . ':' . PHP_EOL;
-
-            /* @var $propertyDescription \OJSscript\Entity\Abstraction\PropertyDescription */
-            foreach ($properties as $propertyDescription) {
-                echo '    ' . $propertyDescription->getName() . ': ';
-                echo $propertyDescription->getType() . '  ';
-                echo ($propertyDescription->getNullable()) ? '': 'NOT NULL';
-                echo PHP_EOL;
-            }
-        }
-        
+        Registry::set('EntityValidatorRegistry', new EntityValidatorRegistry());
+        Registry::set(
+            'EntityDescriptionRegistry',
+            new EntityDescriptionRegistry()
+        );
     }
     
     protected function setTablesToUse()
@@ -113,6 +94,8 @@ class Application
     protected function begin()
     {
         echo PHP_EOL . 'Application begin' . PHP_EOL;
+        
+        $this->setRegistries();
         
         $this->setTablesToUse();
         

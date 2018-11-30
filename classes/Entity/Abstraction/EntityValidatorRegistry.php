@@ -18,28 +18,28 @@
  */
 
 namespace OJSscript\Entity\Abstraction;
-use OJSscript\Core\Registry;
+use OJSscript\Core\NonStaticRegistry;
 
 /**
  * Description of EntityValidatorRegistry
  *
  * @author bernardo
  */
-class EntityValidatorRegistry extends Registry
+class EntityValidatorRegistry extends NonStaticRegistry
 {
     /**
      * 
      * @param string $tableName
      */
-    public static function get($tableName)
+    public function get($tableName)
     {
-        if (!self::isRegistered($tableName)) {
+        if (!$this->isRegistered($tableName)) {
             $entityValidator = new EntityValidator($tableName);
-            self::set($tableName, $entityValidator);
+            $this->set($tableName, $entityValidator);
         }
         
         //var_dump(self::$registry[$tableName]);
         
-        return self::$registry[$tableName];
+        return $this->registry[$tableName];
     }
 }

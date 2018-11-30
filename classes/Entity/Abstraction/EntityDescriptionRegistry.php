@@ -18,16 +18,16 @@
  */
 
 namespace OJSscript\Entity\Abstraction;
-use OJSscript\Core\Registry;
+use OJSscript\Core\NonStaticRegistry;
 
 /**
  * Description of EntityDescriptionRegistry
  *
  * @author bernardo
  */
-class EntityDescriptionRegistry extends Registry
+class EntityDescriptionRegistry extends NonStaticRegistry
 {
-    public static function set($key, $value)
+    public function set($key, $value)
     {
         if (!is_a($value, '\OJSscript\Entity\Abstraction\EntityDescription')) {
             throw new \Exception('Raised exception when trying to register an '

@@ -18,14 +18,14 @@
  */
 
 namespace OJSscript\Statement;
-use OJSscript\Core\Registry;
+use OJSscript\Core\NonStaticRegistry;
 
 /**
  * Registry for Statement objects.
  *
  * @author bernardo
  */
-class StatementRegistry extends Registry
+class StatementRegistry extends NonStaticRegistry
 {
     /**
      * Gets the specified statement. Creates the statement if it was 
@@ -38,14 +38,14 @@ class StatementRegistry extends Registry
     {
         /* @var $statement Statement */
         $statement = null;
-        if (self::isRegistered($statementName)) {
-            $statement = self::$registry[$statementName];
+        if ($this->isRegistered($statementName)) {
+            $statement = $this->registry[$statementName];
         } else {
             $statement = StatementFactory::create(
                 array('name' => $statementName)
             );
             
-            self::set($statementName, $statement);
+            $this->set($statementName, $statement);
         }
         
         return $statement;

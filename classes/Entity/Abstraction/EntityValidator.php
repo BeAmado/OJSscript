@@ -339,10 +339,8 @@ class EntityValidator
      * @param string $propertyName
      * @param mixed $propertyValue
      */
-    public function validateProperty(
-        $propertyName,
-        $propertyValue
-    ) {
+    public function validateProperty($propertyName, $propertyValue)
+    {
         $this->clearExceptionMessages();
         
         $this->validateEntityProperty($propertyName, $propertyValue);
