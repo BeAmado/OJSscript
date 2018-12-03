@@ -100,7 +100,7 @@ class InputValidator
             return false;
         }
         
-        return DateTime::createFromFormat('Y-m-d', $data) !== false;
+        return \DateTime::createFromFormat('Y-m-d', $data) !== false;
     }
     
     protected static function validateDatetime($data)
@@ -109,7 +109,7 @@ class InputValidator
             return false;
         }
         
-        return DateTime::createFromFormat('Y-m-d H:i:s', $data) !== false;
+        return \DateTime::createFromFormat('Y-m-d H:i:s', $data) !== false;
     }
 
     /**
@@ -140,7 +140,7 @@ class InputValidator
             }
 
             /* @var $method string */
-            $method = 'validate' . ucfirst($type);
+            $method = 'validate' . ucfirst($chosenType);
             
             if (self::$method($data)) {
                 return true;

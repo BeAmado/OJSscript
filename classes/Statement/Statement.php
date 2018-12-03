@@ -240,14 +240,13 @@ class Statement
     {
         if ($this->hasParameter($name)) {
             
-            /* @var $parameter StatementParameter */
-            $parameter = $this->parameters[$name];
-            
-            $parameter->setValue($value);
+            echo "\n\nHas the parameter '$name' \n\n";
+            $this->parameters[$name]->setValue($value);
             
             return true;
         }
         else {
+            echo "\n\nDoes not have the parameter '$name'\n\n";
             return false;
         }
     }
@@ -263,6 +262,7 @@ class Statement
     public function bindParameter($name, $value)
     {
         if (!$this->hasParameter($name)) {
+            //echo "\n\nDoes not have the parameter '$name' \n\n";
             return false;
         }
         

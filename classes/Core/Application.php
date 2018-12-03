@@ -24,6 +24,7 @@ use OJSscript\Entity\Journal\JournalHandler;
 use OJSscript\Entity\Article\ArticleHandler;
 use OJSscript\Entity\Abstraction\EntityDescriptionRegistry;
 use OJSscript\Entity\Abstraction\EntityValidatorRegistry;
+use OJSscript\Statement\StatementRegistry;
 
 /**
  * Description of Application
@@ -60,21 +61,29 @@ class Application
      */
     private $tablesToUse;
     
+    /**
+     *
+     * @var ProgramFlow
+     */
+    private $programFlow;
+    
     public function __construct()
     {
         $this->inquirer = new Inquirer();
         $this->menu = new Menu($this->inquirer);
         $this->ojsVersion = '2.4.8-2';
         $this->tablesToUse = array();
+        $this->programFlow = new ProgramFlow();
     }
     
-    private function setRegistries()
+    protected function setRegistries()
     {
         Registry::set('EntityValidatorRegistry', new EntityValidatorRegistry());
         Registry::set(
             'EntityDescriptionRegistry',
             new EntityDescriptionRegistry()
         );
+        Registry::set('StatementRegistry', new StatementRegistry());
     }
     
     protected function setTablesToUse()
@@ -126,6 +135,9 @@ class Application
         
         echo PHP_EOL . 'The amount of unpublished articles is ' 
             . count($articles) . PHP_EOL;
+        
+        //$this->programFlow->saveJsonFile('articles.json', $articles, true);
+        $this->programFlow->saveJsonFile('articles.json', $articles);
         
         $this->end();
         

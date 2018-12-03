@@ -19,6 +19,7 @@
 
 namespace OJSscript\Entity\Abstraction;
 use OJSscript\Core\InputValidator;
+use OJSscript\Core\Registry;
 
 
 /**
@@ -85,6 +86,22 @@ class EntityValidator
     }
     
     /**
+     * Sets the attribute propertiesDescriptions using the entityDescription 
+     * registered.
+     */
+    private function setPropertiesDescriptionsFromRegistry()
+    {
+        /* @var $entityDescriptionRegistry EntityDescriptionRegistry */
+        $entityDescriptionRegistry = Registry::get('EntityDescriptionRegistry');
+        
+        /* @var $entityDescription EntityDescription */
+        $entityDescription = $entityDescriptionRegistry->get($this->tableName);
+        
+        $this->propertiesDescriptions = 
+            $entityDescription->getPropertiesDecriptions();
+    }
+    
+    /**
      *  Constructor for the EntityValidator.
      * 
      *  @param string $tableName
@@ -93,8 +110,7 @@ class EntityValidator
     {
         $this->tableName = $tableName;
         $this->exceptionMessages = array();
-        $this->propertiesDescriptions = EntityDescriptionRegistry::get(
-            $this->tableName)->getPropertiesDescriptions();
+        $this->setPropertiesDescriptionsFromRegistry();
         $this->allowedAssociatedEntities = $this->getAssociatedEntitiesNames();
     }
     
@@ -197,9 +213,9 @@ class EntityValidator
             /* @var $strValue string */
             $strValue = "$propertyValue";
             
-            $msg = (strlen($strValue) > $maxSize) ? null : 'The property "' 
-                . $propertyDescription->getName() . '" must be at most ' 
-                . $maxSize . ' characters long.';
+            $msg = ($maxSize === false || strlen($strValue) <= $maxSize) ? null: 
+                'The property "' . $propertyDescription->getName() . '" must be'
+                . ' at most ' . $maxSize . ' characters long.';
             
         }
         
@@ -284,6 +300,9 @@ class EntityValidator
      */
     private function validateAssociatedEntities($entity)
     {
+        /* @var $entityValidatorRegistry EntityValidatorRegistry */
+        $entityValidatorRegistry = Registry::get('EntityValidatorRegistry');
+        
         /* @var $assocEntityName string */
         /* @var $assocEntities array */
         foreach ($entity->getAssociatedEntitites() 
@@ -298,7 +317,7 @@ class EntityValidator
             } 
             
             /* @var $validator EntityValidator */
-            $validator = EntityValidatorRegistry::get($assocEntityName);
+            $validator = $entityValidatorRegistry->get($assocEntityName);
             
             /* @var $assocEntity \OJSscript\Entity\Abstraction\Entity */
             foreach ($assocEntities as $assocEntity) {

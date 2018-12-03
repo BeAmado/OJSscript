@@ -20,7 +20,6 @@
 namespace OJSscript\Core;
 use OJSscript\Entity\Abstraction\EntityDescription;
 use OJSscript\Entity\Abstraction\PropertyDescription;
-use OJSscript\Entity\Abstraction\EntityDescriptionRegistry;
 
 /**
  * Description of SchemaReader
@@ -230,7 +229,9 @@ class SchemaHandler
             $entityDescription->addPropertyDescription($propertyDescription);
         }
         
-        EntityDescriptionRegistry::set($tableName, $entityDescription);
+        Registry::get('EntityDescriptionRegistry')->set(
+            $tableName,
+            $entityDescription);
     }
     
     /**

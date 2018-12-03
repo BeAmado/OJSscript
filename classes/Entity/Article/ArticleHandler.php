@@ -22,7 +22,6 @@ use OJSscript\Statement\StatementHandler;
 use OJSscript\Entity\Abstraction\Entity;
 use OJSscript\Entity\Abstraction\EntitySetting;
 use OJSscript\Entity\Abstraction\EntityHandler;
-//use OJSscript\Statement\StatementRegistry;
 
 /**
  * Description of ArticleHandler
@@ -78,6 +77,8 @@ class ArticleHandler extends EntityHandler
             
             $article = new Entity('articles', true, true);
             $article->loadArray($arrArticle);
+            
+            //echo 'Article id: ' . $article->getProperty('article_id') . PHP_EOL;
             
             //get the article settings
             $this->fetchArticleSettings($article);

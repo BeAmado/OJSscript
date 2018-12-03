@@ -22,6 +22,7 @@ use OJSscript\Interfaces\Cloneable;
 use OJSscript\Interfaces\ArrayRepresentation;
 use OJSscript\Interfaces\LoadFromArray;
 use OJSscript\Core\InputValidator;
+use OJSscript\Core\Registry;
 
 
 /**
@@ -215,10 +216,13 @@ class Entity implements Cloneable, ArrayRepresentation, LoadFromArray
         $propertyName,
         $propertyValue
     ) {
-        /* @var $validator EntityValidator */
-        $validator = EntityValidatorRegistry::get($this->getTableName());
+        /* @var $entityValidatorRegistry EntityValidatorRegistry */
+        $entityValidatorRegistry = Registry::get('EntityValidatorRegistry');
         
-        get_class($validator); exit();
+        /* @var $validator EntityValidator */
+        $validator = $entityValidatorRegistry->get($this->getTableName());
+        
+        //echo "Validator class: " . get_class($validator) . PHP_EOL; exit();
         
         $validator->validateProperty($propertyName, $propertyValue);
         
@@ -247,8 +251,11 @@ class Entity implements Cloneable, ArrayRepresentation, LoadFromArray
     public function addSetting($setting)
     {
         if ($this->hasSettings()) {
+            /* @var $entityValidatorRegistry EntityValidatorRegistry */
+            $entityValidatorRegistry = Registry::get('EntityValidatorRegistry');
+
             /* @var $validator EntityValidator */
-            $validator = EntityValidatorRegistry::get($this->getTableName());
+            $validator = $entityValidatorRegistry->get($this->getTableName());
             $validator->validateSetting($setting);
 
             $this->settings[] = $setting;
@@ -265,8 +272,11 @@ class Entity implements Cloneable, ArrayRepresentation, LoadFromArray
     public function addAssociatedEntity($entity)
     {
         if ($this->hasAssociatedEntities()) {
+            /* @var $entityValidatorRegistry EntityValidatorRegistry */
+            $entityValidatorRegistry = Registry::get('EntityValidatorRegistry');
+
             /* @var $validator EntityValidator */
-            $validator = EntityValidatorRegistry::get($entity->getTableName());
+            $validator = $entityValidatorRegistry->get($this->getTableName());
             $validator->validateEntity($entity);
 
             $this->associatedEntities[$entity->getTableName()][] = $entity;
@@ -431,8 +441,11 @@ class Entity implements Cloneable, ArrayRepresentation, LoadFromArray
      */
     public function loadArray($array)
     {
+        /* @var $entityDescriptionRegistry EntityDescriptionRegistry */
+        $entityDescriptionRegistry = Registry::get('EntityDescriptionRegistry');
+        
         /* @var $entityDescription EntityDescription */
-        $entityDescription = EntityDescriptionRegistry::get(
+        $entityDescription = $entityDescriptionRegistry->get(
             $this->getTableName()
         );
         

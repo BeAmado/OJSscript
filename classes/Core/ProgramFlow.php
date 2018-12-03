@@ -18,6 +18,7 @@
  */
 
 namespace OJSscript\Core;
+use OJSscript\Entity\Abstraction\Entity;
 
 /**
  * Description of ProgramFlow
@@ -41,9 +42,9 @@ class ProgramFlow
     public function __construct($generatedFilesDir = null)
     {
         if ($generatedFilesDir === null) {
-            $this->generatedFilesDir = \OJSscript\BASE_DIR . '/genfiles';
+            $this->generatedFilesDir = BASE_DIR . '/genfiles';
         } else if (substr($generatedFilesDir, 0, 1) !== '/') {
-            $this->generatedFilesDir = \OJSscript\BASE_DIR . $generatedFilesDir;
+            $this->generatedFilesDir = BASE_DIR . $generatedFilesDir;
         } else {
             $this->generatedFilesDir = $generatedFilesDir;
         }
@@ -69,8 +70,30 @@ class ProgramFlow
     private function formFileFullpath(&$filename)
     {
         if (substr($filename, 0, 1) !== '/') {
-            $filename = $this->generatedFilesDir . $filename;
+            $filename = $this->generatedFilesDir . '/' . $filename;
         }
+    }
+    
+    /**
+     * 
+     * @param array $data
+     * @return boolean
+     */
+    private function formValidArray($data)
+    {
+        if (!is_array($data)) {
+            return false;
+        }
+        
+        /* @var $parseableArray array */
+        $parseableArray = array();
+        
+        /* @var $entity Entity */
+        foreach ($data as $entity) {
+            $parseableArray[] = $entity->asArray();
+        }
+        
+        return $parseableArray;
     }
     
     /**
@@ -79,20 +102,36 @@ class ProgramFlow
      * @param string $filename - The name the saved file must have.
      * 
      * @param array $data - Array to be converted into JSON.
+     * @param boolean $prettyPrint - If true formats the string to be more 
+     * readable.
+     * 
      * @return boolean
      */
-    public function saveJsonFile($filename, $data)
+    public function saveJsonFile($filename, $data, $prettyPrint = false)
     {
         /* @var $jsonData string */
-        $jsonData = json_encode($data);
+        $jsonData = null;
+        
+        if ($prettyPrint) {
+            $jsonData = json_encode(
+                $this->formValidArray($data),
+                JSON_PRETTY_PRINT
+            );
+        } else {
+            $jsonData = json_encode($this->formValidArray($data));
+        }
         
         $this->formFileFullpath($filename);
         
         if (json_decode($jsonData) === null) {
-            return false;
-        } else {
-            return file_put_contents($filename, $jsonData);
+            echo "\n\nThe json data is invalid!\n\n";
+        } elseif (file_put_contents($filename, $jsonData)) {
+            echo "\n\nSuccessfully saved the file '$filename'\n\n";
+            return true;
         }
+        
+        return false;
+
     }
     
     /**

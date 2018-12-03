@@ -20,6 +20,7 @@
 namespace OJSscript\Statement;
 use OJSscript\Entity\Abstraction\Entity;
 use OJSscript\Entity\Abstraction\EntitySetting;
+use OJSscript\Core\Registry;
 
 /**
  * Description of StatementHandler
@@ -62,7 +63,7 @@ class StatementHandler
         $parameterValue
     ) {
         /* @var $statement Statement */
-        $statement = StatementRegistry::get($statementName);
+        $statement = Registry::get('StatementRegistry')->get($statementName);
         
         return $statement->bindParameter($parameterName, $parameterValue);
     }
@@ -104,12 +105,12 @@ class StatementHandler
     public static function bindParams($statementName, $object)
     {
         /* @var $statement Statement */
-        $statement = StatementRegistry::get($statementName);
+        $statement = Registry::get('StatementRegistry')->get($statementName);
         
         /* @var $parameters array */
         $parameters = $statement->getParametersList();
         
-        if (!$this->validateObjectAndParameters($object, $parameters)) {
+        if (!self::validateObjectAndParameters($object, $parameters)) {
             return false;
         }
         
@@ -117,7 +118,7 @@ class StatementHandler
         foreach ($parameters as $parameter) {
            /* @var $bound boolean */
             $bound = $statement->bindParameter(
-                $parameter->getPlaceholder(), 
+                $parameter->getName(), 
                 $object->getProperty($parameter->getName())
             );
                     
@@ -138,7 +139,7 @@ class StatementHandler
     public static function execute($statementName)
     {
         /* @var $statement Statement */
-        $statement = StatementRegistry::get($statementName);
+        $statement = Registry::get('StatementRegistry')->get($statementName);
         
         if ($statement->isPrepared()) {
             $statement->execute();
@@ -158,7 +159,7 @@ class StatementHandler
     public static function fetchRecords($statementName)
     {
         /* @var $statement Statement */
-        $statement = StatementRegistry::get($statementName);
+        $statement = Registry::get('StatementRegistry')->get($statementName);
         
         return $statement->fetchAll();
     }
@@ -172,7 +173,7 @@ class StatementHandler
     public static function fetchNext($statementName)
     {
         /* @var $statement Statement */
-        $statement = StatementRegistry::get($statementName);
+        $statement = Registry::get('StatementRegistry')->get($statementName);
         
         return $statement->fetch();
     }

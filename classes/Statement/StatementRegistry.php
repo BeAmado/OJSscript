@@ -34,7 +34,7 @@ class StatementRegistry extends NonStaticRegistry
      * @param string $statementName
      * @return \OJSscript\Statement\Statement
      */
-    public static function get($statementName)
+    public function get($statementName)
     {
         /* @var $statement Statement */
         $statement = null;
